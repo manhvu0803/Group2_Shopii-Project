@@ -1,0 +1,22 @@
+{
+  "name": "group2_shopii-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmvu19/Group2_Shopii-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nmvu19/Group2_Shopii-Project/issues"
+  },
+  "homepage": "https://github.com/nmvu19/Group2_Shopii-Project#readme",
+  "dependencies": {
+    "firebase-admin": "^10.0.0"
+  }
+}
