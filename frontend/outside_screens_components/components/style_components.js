@@ -1,13 +1,13 @@
 //import part:
 import styled from 'styled-components';
-import {ScrollView, View, Image,
+import {View, Image,
         Text, TextInput,
-        TouchableOpacity} from 'react-native';
+        TouchableOpacity, Dimensions} from 'react-native';
 import Constants from 'expo-constants';
 
 
 //const value prepare:
-const StatusBarHeight= Constants.statusBarHeight;
+export const StatusBarHeight= Constants.statusBarHeight;
 
 
 //implement and export components part:
@@ -23,11 +23,11 @@ export const Colors = {
 };
 
 const {white, main_bg, tertiary, darklight, brand, fb, gg} = Colors;
+const height = Dimensions.get('window').height
 
-export const StyledContainer = styled.ScrollView`
+export const StyledContainer = styled.View`
     flex: 1;
-    padding: 25px;
-    padding-top: ${StatusBarHeight + 20}px;
+    height: ${height}px;
     background-color: ${white};
 `;
 
@@ -48,11 +48,10 @@ export const Logo = styled.Image`
 `;
 
 export const Title = styled.Text`
-    font-size: 60px;
+    font-size: 80px;
     text-align: center;
     font-weight: bold;
     color: ${brand};
-    padding: 10px;
 `;
 
 export const SubTitle = styled.Text`
@@ -89,7 +88,7 @@ export const StyledInputLabel = styled.Text`
 
 export const LeftIcon = styled.View`
     left: 15px;
-    top: 38px;
+    top: 35px;
     position: absolute;
     z-index: 1;
 `;
