@@ -151,28 +151,28 @@ export const Emptyline = styled.View`
     margin-vertical: 10px;
 `;
 
-export const SignupAsk = styled.View`
+export const ExtraView = styled.View`
     justify-content: center;
     flex-direction: row;
     align-items: center;
     padding: 7px;
 `;
 
-export const SAText = styled.Text`
+export const ExtraText = styled.Text`
     justify-content: center;
     align-items: center;
     color: ${tertiary};
     font-size: 15px;
 `;
 
-export const SALink = styled.TouchableOpacity`
+export const ExtraLink = styled.TouchableOpacity`
     ${(props) => props.forgotpwd == false && `
         justify-content: center;
         align-items: center;
     `};
 `;
 
-export const SATextLink = styled.Text`
+export const ExtraTextLink = styled.Text`
     color: ${brand};
     font-size: 17px;
     font-weight: bold;

@@ -2,11 +2,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
-        Logo, Title, TitlePart, SubTitle,
+        Logo, SubTitle,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon, StyledButton, ButtonText,
         Msgline, Emptyline,
-        SignupAsk, SAText, SALink, SATextLink,
+        ExtraView, ExtraText, ExtraLink, ExtraTextLink,
         SocialButtonPart, Colors
 } from "./style_components";
 import {View, Text} from "react-native";
@@ -72,11 +72,11 @@ const Login = () =>{
                         {/*under account input part:*/}
                         <Msgline>...</Msgline>
 
-                        <SALink>
-                            <SATextLink forgotpwd={true}>
+                        <ExtraLink>
+                            <ExtraTextLink forgotpwd={true}>
                                 Forgot password?
-                            </SATextLink>
-                        </SALink>
+                            </ExtraTextLink>
+                        </ExtraLink>
 
                         <StyledButton signin={true} onPress={handleSubmit}>
                             <ButtonText signin={true}> Login </ButtonText>
@@ -85,12 +85,12 @@ const Login = () =>{
 
                         <Emptyline/>
 
-                        <SignupAsk>
-                            <SAText>Don't have account already? </SAText>
-                            <SALink>
-                                <SATextLink>Sign-up</SATextLink>
-                            </SALink>
-                        </SignupAsk>
+                        <ExtraView>
+                            <ExtraText>Don't have account already? </ExtraText>
+                            <ExtraLink>
+                                <ExtraTextLink>Sign-up</ExtraTextLink>
+                            </ExtraLink>
+                        </ExtraView>
 
                         <View style={{flex: 1}}>
                             <Text style={{textAlign: "center"}}>
