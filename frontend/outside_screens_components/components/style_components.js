@@ -20,15 +20,18 @@ export const Colors = {
     brand: '#00BFFF',
     fb: '#0a82f1',
     gg: '#f72d2d',
+    i_extra: '#43e6c2',
 };
 
-const {white, main_bg, tertiary, darklight, brand, fb, gg} = Colors;
+const {white, main_bg, tertiary, darklight, brand, fb, gg, i_extra} = Colors;
 const height = Dimensions.get('window').height
 
 export const StyledContainer = styled.View`
     flex: 1;
     height: ${height}px;
     background-color: ${white};
+    padding-left: 25px;
+    padding-right: 25px;
 `;
 
 export const Innercontainer = styled.View`
@@ -81,14 +84,14 @@ export const StyledTextInput = styled.TextInput`
 
 export const StyledInputLabel = styled.Text`
     color: ${tertiary};
-    font-size: 13px;
+    font-size: 15px;
     text-align: left;
     font-weight: bold;
 `;
 
 export const LeftIcon = styled.View`
-    left: 15px;
-    top: 35px;
+    padding-left: 14px;
+    top: 38px;
     position: absolute;
     z-index: 1;
 `;
@@ -146,7 +149,6 @@ export const Msgline = styled.Text`
 export const Emptyline = styled.View`
     height: 1px;
     width: 100%;
-    background-color: ${darklight};
     margin-vertical: 10px;
 `;
 
@@ -154,7 +156,9 @@ export const ExtraView = styled.View`
     justify-content: center;
     flex-direction: row;
     align-items: center;
-    padding: 7px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 7px;
 `;
 
 export const ExtraText = styled.Text`
@@ -172,7 +176,7 @@ export const ExtraLink = styled.TouchableOpacity`
 `;
 
 export const ExtraTextLink = styled.Text`
-    color: ${brand};
+    color: ${i_extra};
     font-size: 17px;
     font-weight: bold;
     ${(props) => props.forgotpwd == true && `

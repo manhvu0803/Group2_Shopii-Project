@@ -2,7 +2,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
-        Logo, SubTitle,
+        Logo,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon, StyledButton, ButtonText,
         Msgline, Emptyline,
@@ -10,7 +10,7 @@ import{ StyledContainer, Innercontainer,
         SocialButtonPart, Colors, StatusBarHeight
 } from "./../components/style_components";
 import {View, Text} from "react-native";
-import {Octicons, Ionicons, Fontisto, SimpleLineIcons} from "@expo/vector-icons";
+import {Octicons, Ionicons, Fontisto, MaterialCommunityIcons} from "@expo/vector-icons";
 import Scroll_component from './../components/scroll_component';
 
 
@@ -18,7 +18,8 @@ import Scroll_component from './../components/scroll_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {brand, darklight, white} = Colors;
+const {darklight, white, i_extra} = Colors;
+var goto="";
 
 
 //Login implementation:
@@ -28,16 +29,15 @@ const Login = ({navigation}) =>{
 
     return (
         <Scroll_component>
-            <StyledContainer style={{
-                padding: 25,
-                paddingTop: StatusBarHeight + 20}}
+            <StyledContainer style={{paddingTop: 5}}
             >
                 <StatusBar style="dark"/>
                 <Innercontainer>
                 
                     <Logo resizeMode="cover"
                     source={require('./../assets/Logo.png')}/>
-                    <SubTitle>Login page</SubTitle>
+                    
+                    <Emptyline/>
 
                     <Formik
                         initialValues={{email: '', password: ''}}
@@ -50,7 +50,7 @@ const Login = ({navigation}) =>{
                             {/*account input:*/}
                             <MyTextInput
                             label="User account"
-                            placeholder="Email, username, phonenumber"
+                            placeholder="Email/username/phone"
                             placeholderTextColor={darklight}
                             onChangeText={handleChange('email')}
                             onBlur={handleBlur('email')}
@@ -73,12 +73,16 @@ const Login = ({navigation}) =>{
                             />
                         
                             {/*under account input part:*/}
-                            <Msgline>...</Msgline>
+                            <Msgline style={{color: darklight}}>
+                                ...
+                            </Msgline>
 
-                            <ExtraLink>
+                            <ExtraLink style={{width:'40%'}}>
                                 <ExtraTextLink forgotpwd={true}
-                                onPress={() =>
-                                navigation.navigate("ForgotPwd")}>
+                                onPress={() =>{
+                                navigation.navigate("MailInput");
+                                goto="ChangePwd"}}
+                                >
                                     Forgot password?
                                 </ExtraTextLink>
                             </ExtraLink>
@@ -92,15 +96,30 @@ const Login = ({navigation}) =>{
                                 color={white} size={25}/>
                             </StyledButton>
 
-                            <Emptyline/>
+                            <Emptyline style={{backgroundColor: darklight}}/>
+
+                            <ExtraView>
+                                <ExtraText style={{fontSize: 12}}>
+                                    By using our services, you agree with our 
+                                </ExtraText>
+                                <ExtraLink>
+                                    <ExtraTextLink style= {{paddingLeft: 5,
+                                    fontSize: 12}}>
+                                        Term of services
+                                    </ExtraTextLink>
+                                </ExtraLink>
+                            </ExtraView>
 
                             <ExtraView>
                                 <ExtraText>
                                     Don't have account already? 
                                 </ExtraText>
                                 <ExtraLink>
-                                    <ExtraTextLink onPress={() =>
-                                    navigation.navigate("Signup")}>
+                                    <ExtraTextLink style= {{paddingLeft: 5}}
+                                    onPress={() =>{
+                                    navigation.navigate("MailInput");
+                                    goto="InforInput"}}
+                                    >
                                         Sign-up
                                     </ExtraTextLink>
                                 </ExtraLink>
@@ -109,6 +128,7 @@ const Login = ({navigation}) =>{
                             <Text style={{textAlign: "center"}}>
                                 or sign-in with
                             </Text>
+                            
                             <SocialButtonPart>
                                 <StyledButton google={true}
                                 onPress={handleSubmit}>
@@ -143,12 +163,15 @@ const MyTextInput = ({label, icon,
         <View>
             {!isPassword && (
                 <LeftIcon>
-                    <SimpleLineIcons name={"user"} size={28} color={brand}/>
+                    <MaterialCommunityIcons
+                    name={"account-circle-outline"} size={32}
+                    color={i_extra}/>
                 </LeftIcon>
             )}
             {isPassword && (
-                <LeftIcon>
-                    <Octicons name={"lock"} size={30} color={brand}/>
+                <LeftIcon style={{paddingLeft: 17}}>
+                    <Octicons name={"lock"} size={30}
+                    color={i_extra}/>
                 </LeftIcon>
             )}
             <StyledInputLabel>{label}</StyledInputLabel>
@@ -163,4 +186,6 @@ const MyTextInput = ({label, icon,
     )
 }
 
+
 export default Login;
+export {goto};

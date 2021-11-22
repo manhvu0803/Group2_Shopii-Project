@@ -17,63 +17,37 @@ import Scroll_component from './../components/scroll_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {brand, darklight, white} = Colors;
+const {brand, darklight, white, i_extra} = Colors;
 
 
 //Login implementation:
-const Signup = ({navigation}) =>{
+const ChangePwd = ({navigation}) =>{
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
 
     return (
         <Scroll_component>
-            <StyledContainer>
+            <StyledContainer style={{paddingTop: 75}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
-                
-                    <Title>Shopii</Title>
-                    <SubTitle>Get back your password page</SubTitle>
 
                     <Formik
-                    initialValues={{email: '', verifycode: '',
-                    password: '', confirmpassword: ''}}
+                    initialValues={{newpassword: '', confirmpassword: ''}}
                     onSubmit={(values) => {
-                        console.log(values);}
-                    }>
+                        console.log(values);
+                        navigation.popToTop();
+                    }}>
                         {({handleChange, handleBlur,
                         handleSubmit, values}) =>
                         (<StyledFormArea>
                             <MyTextInput
-                            label="User account"
-                            icon="mail"
-                            placeholder="Email, username, phonenumber"
-                            placeholderTextColor={darklight}
-                            onChangeText={handleChange('email')}
-                            onBlur={handleBlur('email')}
-                            value={values.email}
-                            keyboardType="email-address"
-                            />
-
-                            <MyTextInput
-                            label="Verify code"
-                            icon="mail"
-                            placeholder="XXXXXXXX"
-                            placeholderTextColor={darklight}
-                            onChangeText={handleChange('verifycode')}
-                            onBlur={handleBlur('verifycode')}
-                            value={values.verifycode}
-                            keyboardType="email-address"
-                            />
-
-                            {/*password input:*/}
-                            <MyTextInput
-                            label="Password"
+                            label="New password"
                             icon="lock"
                             placeholder="* * * * * * * *"
                             placeholderTextColor={darklight}
-                            onChangeText={handleChange('password')}
-                            onBlur={handleBlur('password')}
-                            value={values.password}
+                            onChangeText={handleChange('newpassword')}
+                            onBlur={handleBlur('newpassword')}
+                            value={values.newpassword}
                             secureTextEntry = {hidePwd}
                             isPassword={true}
                             hidePassword = {hidePwd}
@@ -88,9 +62,9 @@ const Signup = ({navigation}) =>{
                             onBlur={handleBlur('confirmpassword')}
                             value={values.confirmpassword}
                             secureTextEntry = {hideconfirmPwd}
-                            isPassword={true}
-                            hidePassword = {hideconfirmPwd}
-                            setHiddenPassword = {setHiddenconfirmpwd}
+                            hideconfirmPwd={true}
+                            hideConfirmPassword = {hideconfirmPwd}
+                            setHiddenConfirmPassword = {setHiddenconfirmpwd}
                             />
 
                             <StyledButton onPress={handleSubmit}>
@@ -110,11 +84,12 @@ const Signup = ({navigation}) =>{
 
 const MyTextInput = ({label, icon,
     isPassword, hidePassword, setHiddenPassword,
+    hideconfirmPwd, hideConfirmPassword, setHiddenConfirmPassword,
     ...props}) => {
     return (
         <View>
             <LeftIcon>
-                <Octicons name={icon} size={30} color={brand}/>
+                <Octicons name={icon} size={30} color={i_extra}/>
             </LeftIcon>
             <StyledInputLabel>{label}</StyledInputLabel>
             <StyledTextInput {...props}/>
@@ -124,9 +99,11 @@ const MyTextInput = ({label, icon,
                     size={30} color={darklight}/>
                 </RightIcon>
             )}
-            {isPassword && (
-                <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
-                    <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}
+            {hideconfirmPwd && (
+                <RightIcon onPress={() =>
+                setHiddenConfirmPassword(!hideConfirmPassword)}>
+                    <Ionicons name={hideConfirmPassword ?
+                    "md-eye-off" : "md-eye"}
                     size={30} color={darklight}/>
                 </RightIcon>
             )}
@@ -134,4 +111,4 @@ const MyTextInput = ({label, icon,
     )
 }
 
-export default Signup;
+export default ChangePwd;

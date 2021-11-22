@@ -2,14 +2,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
-        Title, SubTitle,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon,
         StyledButton, ButtonText,
         Colors
 } from "./../components/style_components";
-import {View, TouchableOpacity} from "react-native";
-import {Octicons, Ionicons} from "@expo/vector-icons";
+import {View, TouchableOpacity}from "react-native";
+import {Octicons, Ionicons,
+        MaterialIcons, MaterialCommunityIcons
+} from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Scroll_component from './../components/scroll_component';
 
@@ -18,11 +19,11 @@ import Scroll_component from './../components/scroll_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {brand, darklight, white} = Colors;
+const {brand, darklight, white, i_extra} = Colors;
 
 
 //Login implementation:
-const Signup = ({navigation}) =>{
+const InforInput = ({navigation}) =>{
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
     const [show, setShow] = useState(false);
@@ -43,12 +44,10 @@ const Signup = ({navigation}) =>{
 
     return (
         <Scroll_component>
-            <StyledContainer>
+            <StyledContainer style={{paddingTop: 20}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
                 
-                    <Title>Shopii</Title>
-                    <SubTitle>Sign-up page</SubTitle>
                     {show && (
                         <DateTimePicker
                         testID="dateTimePicker"
@@ -61,16 +60,17 @@ const Signup = ({navigation}) =>{
                     )}
 
                     <Formik
-                    initialValues={{fullname: '', email: '',
-                    dateOfBrith: '', password: '',
+                    initialValues={{fullname: '', dateOfBrith: '',
+                    phonenb: '', username: '', password: '',
                     confirmpassword: ''}}
                     onSubmit={(values) => {
-                    console.log(values);}
-                    }>
+                    console.log(values);
+                    navigation.popToTop();
+                    }}>
                         {({handleChange, handleBlur,
                         handleSubmit, values}) =>
                         (<StyledFormArea>
-                            {/*account input:*/}
+                            {/*user informations input:*/}
                             <MyTextInput
                             label="Full name"
                             icon="person"
@@ -82,30 +82,43 @@ const Signup = ({navigation}) =>{
                             />
 
                             <MyTextInput
-                            label="User account"
-                            icon="mail"
-                            placeholder="Email, username, phonenumber"
-                            placeholderTextColor={darklight}
-                            onChangeText={handleChange('email')}
-                            onBlur={handleBlur('email')}
-                            value={values.email}
-                            keyboardType="email-address"
-                            />
-
-                            <MyTextInput
                             label="Date of birth"
                             icon="calendar"
                             placeholder="Sat Jan 01 2000"
-                            placeholderTextColor={darklight}
+                            placeholderTextColor='black'
                             onChangeText={handleChange('dateOfBirth')}
                             onBlur={handleBlur('dateOfBirth')}
-                            value={dob ? values.dateOfBrith = dob.toDateString() : ''}
+                            value={dob ?
+                                   values.dateOfBrith = dob.toDateString()
+                                   : ''}
                             isDate={true}
                             editable={false}
                             showDatePicker={showDatePicker}
                             />
 
-                            {/*password input:*/}
+                            <MyTextInput
+                            label="Phone number"
+                            icon="contact-phone"
+                            placeholder="Your phone number"
+                            placeholderTextColor={darklight}
+                            onChangeText={handleChange('phonenb')}
+                            onBlur={handleBlur('phonenb')}
+                            value={values.phonenb}
+                            isPhone={true}
+                            />
+                            
+                            {/*account input:*/}
+                            <MyTextInput
+                            label="Username"
+                            icon="rename-box"
+                            placeholder="Email, username, phonenumber"
+                            placeholderTextColor={darklight}
+                            onChangeText={handleChange('username')}
+                            onBlur={handleBlur('username')}
+                            value={values.username}
+                            isUsername={true}
+                            />
+
                             <MyTextInput
                             label="Password"
                             icon="lock"
@@ -128,9 +141,9 @@ const Signup = ({navigation}) =>{
                             onBlur={handleBlur('confirmpassword')}
                             value={values.confirmpassword}
                             secureTextEntry = {hideconfirmPwd}
-                            isPassword={true}
-                            hidePassword = {hideconfirmPwd}
-                            setHiddenPassword = {setHiddenconfirmpwd}
+                            isConfirmPassword={true}
+                            hideConfirmPassword = {hideconfirmPwd}
+                            setHiddenConfirmPassword = {setHiddenconfirmpwd}
                             />
 
                             <StyledButton
@@ -149,28 +162,44 @@ const Signup = ({navigation}) =>{
     );
 }
 
-const MyTextInput = ({label, icon,
-    isPassword, hidePassword, setHiddenPassword, isDate, showDatePicker,
+const MyTextInput = ({label, icon, isPhone, isDate, showDatePicker,
+    isUsername, isPassword, hidePassword, setHiddenPassword,
+    isConfirmPassword, hideConfirmPassword, setHiddenConfirmPassword,
     ...props}) => {
     return (
         <View>
-            <LeftIcon>
-                <Octicons name={icon} size={30} color={brand}/>
-            </LeftIcon>
+            {isPhone && <LeftIcon style={{paddingLeft: 12}}>
+                <MaterialIcons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+            
+            {isUsername && <LeftIcon style={{paddingLeft: 11}}>
+                <MaterialCommunityIcons name={icon} size={30}
+                color={i_extra}/>
+            </LeftIcon>}
+
+            {(!isPhone && !isUsername) && <LeftIcon>
+                <Octicons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+            
             <StyledInputLabel>{label}</StyledInputLabel>
+
             {!isDate && <StyledTextInput {...props}/>}
             {isDate && <TouchableOpacity onPress={showDatePicker}>
                 <StyledTextInput {...props}/>
                 </TouchableOpacity>}
+            
             {isPassword && (
                 <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
                     <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}
                     size={30} color={darklight}/>
                 </RightIcon>
             )}
-            {isPassword && (
-                <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
-                    <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}
+
+            {isConfirmPassword && (
+                <RightIcon onPress={() =>
+                    setHiddenConfirmPassword(!hideConfirmPassword)}>
+                    <Ionicons name={hideConfirmPassword ?
+                    "md-eye-off" : "md-eye"}
                     size={30} color={darklight}/>
                 </RightIcon>
             )}
@@ -178,4 +207,4 @@ const MyTextInput = ({label, icon,
     )
 }
 
-export default Signup;
+export default InforInput;
