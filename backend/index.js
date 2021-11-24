@@ -25,15 +25,15 @@ app.get("/login", async (req, res) => {
 	res.json(respond);
 })
 
-app.get("/register", (req, res) => {
+app.post("/register", (req, res) => {
 	let username = req.query["username"]
 	let userData = {
-		Password = req.query["password"],
-		Age = req.query["age"],
-		Address = req.query["address"],
-		Email = req.query["email"],
-		Phone = req.query["phone"],
-		Sex = req.query["sex"]
+		password: req.query["password"],
+		age: req.query["age"],
+		address: req.query["address"],
+		email: req.query["email"],
+		phone: req.query["phone"],
+		sex: req.query["sex"]
 	}
 })
 
