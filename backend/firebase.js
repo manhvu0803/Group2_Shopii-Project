@@ -11,16 +11,17 @@ const db = firestore.getFirestore();
 const users = new Map()
 
 db.collection("accounts").get().then((res) => {
+	console.log("Got user data from database");
 	res.forEach((doc) => {
-		let data = doc.data().password;
+		let data = doc.data();
 		users.set(doc.id, data);
 	})
 });
 
-exports.getUsers = function(username, debug=false)
+exports.getUser = function(username, debug=false)
 {
 	if (users.has(username))
-		return data;
+		return users.get(username);
 	else {
 		if (debug)
 			console.log(`User '${username}' does not exists`)
@@ -28,18 +29,16 @@ exports.getUsers = function(username, debug=false)
 	}
 }
 
-exports.newUser = async function(username, password)
+exports.newUser = async function(username, userData)
 {
-	if (password.length < 8) {
+	if (userData.password.length < 8) {
 		console.log("Password is too short");
 		return;
 	}
 	
-	users.set(username, password);
-	const user = await db.collection("accounts").doc(username);
-	await user.set({
-		password: password
-	})
+	users.set(username, userData);
+	const userDoc = await db.collection("accounts").doc(username);
+	await userDoc.set(userData)
 	
-	console.log("User set up successfully");
+	console.log("New user written to database successfully");
 }
