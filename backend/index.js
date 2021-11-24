@@ -16,16 +16,16 @@ app.get("/login", async (req, res) => {
 	if (user != null) {
 		respond.existed = true;
 		if (user.password === req.query["password"]) {
-			delete user.password;
 			respond.password = true;
-			respond.data = user
+			respond.data = Object.assign({}, user);
+			delete respond.data.password;
 		}
 	};
 
 	res.json(respond);
 })
 
-app.post("/register", (req, res) => {
+app.get("/register", (req, res) => {
 	let username = req.query["username"]
 	let userData = {
 		password: req.query["password"],
