@@ -144,6 +144,7 @@ export const ButtonText = styled.Text`
 export const Msgline = styled.Text`
     text-align: center;
     font-size: 14px;
+    color: ${props => props.type == false ? "red" : "green"};
 `;
 
 export const Emptyline = styled.View`

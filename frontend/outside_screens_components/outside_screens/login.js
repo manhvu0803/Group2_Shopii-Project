@@ -1,4 +1,5 @@
 //import part:
+//style components:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
@@ -9,9 +10,18 @@ import{ StyledContainer, Innercontainer,
         ExtraView, ExtraText, ExtraLink, ExtraTextLink,
         SocialButtonPart, Colors, StatusBarHeight
 } from "./../components/style_components";
-import {View, Text} from "react-native";
+
+//base components of react-native:
+import {View, Text, ActivityIndicator} from "react-native";
+
+//icon components:
 import {Octicons, Ionicons, Fontisto, MaterialCommunityIcons} from "@expo/vector-icons";
+
+//scroll component:
 import Scroll_component from './../components/scroll_component';
+
+//API client axios:
+import axios from 'axios';
 
 
 //formik:
@@ -25,7 +35,44 @@ var goto="";
 //Login implementation:
 const Login = ({navigation}) =>{
     const [hidePwd, setHiddenpwd] = useState(true);
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
 
+    const handleLogin = (credentials, setSubmitting) => {
+        handleMessage(null);
+        const  url = ("https://shopii.loca.lt/login?"
+                    +"username="+credentials.email
+                    +"&password="+credentials.password);
+        axios.post(url, credentials).then((response) => {
+            const result = response.data;
+            const {existed, password, data} = result;
+            if (existed !== "true"){
+                handleMessage("Error: the account may not created yet.", 
+                            existed);
+            }
+            else{
+                if (password !== "true"){
+                    handleMessage("Error: the password is not correct.", 
+                            password);
+                }
+                else{
+                    console.log("Welcome to our shopping app");
+                }
+                
+            }
+            setSubmitting(false);
+        }).catch(error => {
+            console.log(error.JSON());
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        })
+    }
+
+    const handleMessage = (mess, type = false) => {
+        setMessage(mess);
+        setMessageType(type);
+    }
 
     return (
         <Scroll_component>
@@ -41,11 +88,18 @@ const Login = ({navigation}) =>{
 
                     <Formik
                         initialValues={{email: '', password: ''}}
-                        onSubmit={(values) => {
+                        onSubmit={(values, {setSubmitting}) => {
+                            if (values.email=="" || values.password==""){
+                                handleMessage("Please fill all the fields");
+                                setSubmitting(false);
+                            }
+                            else{
+                                handleLogin(values, setSubmitting);
+                            }
                             console.log(values);
                         }}>
                         {({handleChange, handleBlur,
-                        handleSubmit, values}) =>
+                        handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
                             {/*account input:*/}
                             <MyTextInput
@@ -73,21 +127,22 @@ const Login = ({navigation}) =>{
                             />
                         
                             {/*under account input part:*/}
-                            <Msgline style={{color: darklight}}>
-                                ...
+                            <Msgline type={messageType}>
+                                {message}
                             </Msgline>
 
                             <ExtraLink style={{width:'40%'}}>
                                 <ExtraTextLink forgotpwd={true}
                                 onPress={() =>{
                                 navigation.navigate("MailInput");
-                                goto="ChangePwd"}}
+                                goto="ChangePwd";
+                                handleMessage(null)}}
                                 >
                                     Forgot password?
                                 </ExtraTextLink>
                             </ExtraLink>
 
-                            <StyledButton
+                            {!isSubmitting && (<StyledButton
                             onPress={handleSubmit}>
                                 <ButtonText>
                                     Login
@@ -95,6 +150,14 @@ const Login = ({navigation}) =>{
                                 <Octicons name="sign-in"
                                 color={white} size={25}/>
                             </StyledButton>
+                            )}
+
+                            {isSubmitting && (<StyledButton
+                            disabled={true}>
+                                <ActivityIndicator size="large"
+                                color={white}/>
+                            </StyledButton>
+                            )}
 
                             <Emptyline style={{backgroundColor: darklight}}/>
 
@@ -118,7 +181,8 @@ const Login = ({navigation}) =>{
                                     <ExtraTextLink style= {{paddingLeft: 5}}
                                     onPress={() =>{
                                     navigation.navigate("MailInput");
-                                    goto="InforInput"}}
+                                    goto="InforInput";
+                                    handleMessage(null)}}
                                     >
                                         Sign-up
                                     </ExtraTextLink>

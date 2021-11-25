@@ -6,6 +6,7 @@ import Login from './../outside_screens/login';
 import MailInput from './../outside_screens/mail_input';
 import MailVerify from './../outside_screens/mail_verify';
 import InforInput from "./../outside_screens/infor_input";
+import UsnPwdCreate from "../outside_screens/usnpwd_create";
 import ChangePwd from './../outside_screens/changepwd';
 
 import {Colors} from "./../components/style_components";
@@ -51,12 +52,20 @@ const RootStack = () => {
                 name="MailVerify" component={MailVerify}/>
 
                 <Stack.Screen options={{
-                title:"Sign-up",
+                title:"Personal information",
                 headerTitleAlign:'center',
                 headerTitleStyle: {fontWeight: 'bold',
                 fontSize: 30,
                 }}}
                 name="InforInput" component={InforInput}/>
+
+                <Stack.Screen options={{
+                title:"Create account",
+                headerTitleAlign:'center',
+                headerTitleStyle: {fontWeight: 'bold',
+                fontSize: 30,
+                }}}
+                name="UsnPwdCreate" component={UsnPwdCreate}/>
 
                 <Stack.Screen options={{
                 title:"Change password",

@@ -3,13 +3,13 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
         StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon, RightIcon,
+        LeftIcon,
         StyledButton, ButtonText,
         Colors
 } from "./../components/style_components";
-import {View, TouchableOpacity}from "react-native";
-import {Octicons, Ionicons,
-        MaterialIcons, MaterialCommunityIcons
+import {View, TouchableOpacity, Text}from "react-native";
+import {Octicons, MaterialIcons, FontAwesome5, 
+        MaterialCommunityIcons
 } from "@expo/vector-icons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Scroll_component from './../components/scroll_component';
@@ -28,6 +28,7 @@ const InforInput = ({navigation}) =>{
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date(2000, 0 ,1));
+    const [genderval, setGenderval] = useState("male");
 
     //Actual date of birth to be sent:
     const [dob, setDob] = useState();
@@ -44,7 +45,7 @@ const InforInput = ({navigation}) =>{
 
     return (
         <Scroll_component>
-            <StyledContainer style={{paddingTop: 20}}>
+            <StyledContainer style={{paddingTop: 55}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
                 
@@ -61,16 +62,14 @@ const InforInput = ({navigation}) =>{
 
                     <Formik
                     initialValues={{fullname: '', dateOfBrith: '',
-                    phonenb: '', username: '', password: '',
-                    confirmpassword: ''}}
+                    phonenb: '', gender: '', address: ''}}
                     onSubmit={(values) => {
                     console.log(values);
-                    navigation.popToTop();
+                    navigation.navigate("UsnPwdCreate");
                     }}>
                         {({handleChange, handleBlur,
                         handleSubmit, values}) =>
                         (<StyledFormArea>
-                            {/*user informations input:*/}
                             <MyTextInput
                             label="Full name"
                             icon="person"
@@ -79,6 +78,7 @@ const InforInput = ({navigation}) =>{
                             onChangeText={handleChange('fullname')}
                             onBlur={handleBlur('fullname')}
                             values={values.fullname}
+                            isFullname = {true}
                             />
 
                             <MyTextInput
@@ -106,53 +106,35 @@ const InforInput = ({navigation}) =>{
                             value={values.phonenb}
                             isPhone={true}
                             />
-                            
-                            {/*account input:*/}
+
                             <MyTextInput
-                            label="Username"
-                            icon="rename-box"
-                            placeholder="Email, username, phonenumber"
+                            label="Gender"
+                            icon="transgender"
+                            placeholder="Male/female/3rd gender"
                             placeholderTextColor={darklight}
-                            onChangeText={handleChange('username')}
-                            onBlur={handleBlur('username')}
-                            value={values.username}
-                            isUsername={true}
+                            onChangeText={handleChange('gender')}
+                            onBlur={handleBlur('gender')}
+                            value={values.gender=genderval}
+                            setGender={setGenderval}
+                            isGender = {true}
                             />
 
                             <MyTextInput
-                            label="Password"
-                            icon="lock"
-                            placeholder="* * * * * * * *"
+                            label="Address"
+                            icon="address-book"
+                            placeholder="Your address"
                             placeholderTextColor={darklight}
-                            onChangeText={handleChange('password')}
-                            onBlur={handleBlur('password')}
-                            value={values.password}
-                            secureTextEntry = {hidePwd}
-                            isPassword={true}
-                            hidePassword = {hidePwd}
-                            setHiddenPassword = {setHiddenpwd}
-                            />
-                            <MyTextInput
-                            label="Confirm password"
-                            icon="lock"
-                            placeholder="* * * * * * * *"
-                            placeholderTextColor={darklight}
-                            onChangeText={handleChange('confirmpassword')}
-                            onBlur={handleBlur('confirmpassword')}
-                            value={values.confirmpassword}
-                            secureTextEntry = {hideconfirmPwd}
-                            isConfirmPassword={true}
-                            hideConfirmPassword = {hideconfirmPwd}
-                            setHiddenConfirmPassword = {setHiddenconfirmpwd}
+                            onChangeText={handleChange('address')}
+                            onBlur={handleBlur('address')}
+                            value={values.address}
+                            isAddress = {true}
                             />
 
                             <StyledButton
                             onPress={handleSubmit}>
                                 <ButtonText>
-                                    Sign-up
+                                    Next
                                 </ButtonText>
-                                <Ionicons name="ios-create"
-                                color={white} size={25}/>
                             </StyledButton>
                         </StyledFormArea>)}
                     </Formik>
@@ -162,47 +144,154 @@ const InforInput = ({navigation}) =>{
     );
 }
 
-const MyTextInput = ({label, icon, isPhone, isDate, showDatePicker,
-    isUsername, isPassword, hidePassword, setHiddenPassword,
-    isConfirmPassword, hideConfirmPassword, setHiddenConfirmPassword,
+const MyTextInput = ({label, icon, isFullname, isPhone, 
+    isDate, showDatePicker, isGender, isAddress, value, setGender,
     ...props}) => {
+    
     return (
         <View>
-            {isPhone && <LeftIcon style={{paddingLeft: 12}}>
-                <MaterialIcons name={icon} size={30} color={i_extra}/>
-            </LeftIcon>}
-            
-            {isUsername && <LeftIcon style={{paddingLeft: 11}}>
-                <MaterialCommunityIcons name={icon} size={30}
-                color={i_extra}/>
-            </LeftIcon>}
-
-            {(!isPhone && !isUsername) && <LeftIcon>
-                <Octicons name={icon} size={30} color={i_extra}/>
-            </LeftIcon>}
-            
             <StyledInputLabel>{label}</StyledInputLabel>
 
-            {!isDate && <StyledTextInput {...props}/>}
+            {(!isDate && !isGender) && <StyledTextInput {...props}/>}
             {isDate && <TouchableOpacity onPress={showDatePicker}>
-                <StyledTextInput {...props}/>
-                </TouchableOpacity>}
-            
-            {isPassword && (
-                <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
-                    <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}
-                    size={30} color={darklight}/>
-                </RightIcon>
-            )}
+            <StyledTextInput {...props}/>
+            </TouchableOpacity>}
 
-            {isConfirmPassword && (
-                <RightIcon onPress={() =>
-                    setHiddenConfirmPassword(!hideConfirmPassword)}>
-                    <Ionicons name={hideConfirmPassword ?
-                    "md-eye-off" : "md-eye"}
-                    size={30} color={darklight}/>
-                </RightIcon>
-            )}
+            {isGender && <View style={{
+            height: 60,
+            marginBottom: 10,
+            }}>
+                <GenderField setGender={setGender}/>
+            </View>}
+
+            {isFullname && <LeftIcon style={{paddingLeft: 12}}>
+                <MaterialIcons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isDate && <LeftIcon style={{paddingLeft: 14}}>
+                <Octicons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isPhone && <LeftIcon style={{paddingLeft: 11}}>
+                <MaterialIcons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isGender && <LeftIcon style={{paddingLeft: 14}}>
+                <FontAwesome5 name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isAddress && <LeftIcon style={{paddingLeft: 12}}>
+                <FontAwesome5 name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+        </View>
+    )
+}
+
+const GenderField = ({setGender}) => {
+    const [selected, setSelected] = useState("male");
+    return (
+        <View style={{
+            paddingLeft: 120,
+            paddingTop: 20,
+            width: "70%",
+            justifyContent:'center',
+            flexDirection:'row',
+        }}>
+            {selected != "male" ?
+            <TouchableOpacity 
+                style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+                }}
+                onPress={() => {
+                setSelected("male");
+                setGender("male");
+            }}>
+                <MaterialCommunityIcons size={30} 
+                    name="circle-outline"
+                    color={darklight}/>
+                    <Text>male</Text>
+
+            </TouchableOpacity>
+            :
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+            }}>
+                <MaterialCommunityIcons size={30} 
+                name="circle-slice-8"
+                color={brand}/>
+                <Text>male</Text>
+            </TouchableOpacity>
+            }
+
+            {selected != "female" ?
+            <TouchableOpacity 
+                style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+                }}
+                onPress={() => {
+                setSelected("female");
+                setGender("female");
+            }}>
+                <MaterialCommunityIcons size={30} 
+                    name="circle-outline"
+                    color={darklight}/>
+                    <Text>female</Text>
+
+            </TouchableOpacity>
+            :
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+            }}>
+                <MaterialCommunityIcons size={30} 
+                name="circle-slice-8"
+                color={brand}/>
+                <Text>female</Text>
+            </TouchableOpacity>
+            }
+
+            {selected != "other" ?
+            <TouchableOpacity 
+                style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+                }}
+                onPress={() => {
+                setSelected("other");
+                setGender("other");
+            }}>
+                <MaterialCommunityIcons size={30} 
+                    name="circle-outline"
+                    color={darklight}/>
+                    <Text>other</Text>
+
+            </TouchableOpacity>
+            :
+            <TouchableOpacity style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 20,
+                marginBottom: 10
+            }}>
+                <MaterialCommunityIcons size={30} 
+                name="circle-slice-8"
+                color={brand}/>
+                <Text>other</Text>
+            </TouchableOpacity>
+            }
         </View>
     )
 }

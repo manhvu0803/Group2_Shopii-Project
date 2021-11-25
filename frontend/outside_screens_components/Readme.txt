@@ -1,8 +1,9 @@
 This folder contains all the outside screens, which includes:
-_login screen (done)
-_sign-up screen (first version UI)
-_get back password screen (first version UI)
+_login screen (done UI, working on checking login process)
+_sign-up screen (second version UI)
+_get back password screen (second version UI)
 All the screens is impletemented with expo react native.
+
 
 The packages need to have to run those file are (will update when needed):
 _expo-cli (install by using command npm install -g expo-cli)
@@ -16,6 +17,8 @@ _navigation pakages
 	+expo install react-native-screens react-native-safe-area-context
 	+npm install @react-navigation/native-stack
 )
+_axios (install by using command expo install axios)
+
 
 To run the project correctly with expo (until now):
 _Create a project by using expo init <Project's name>
