@@ -1,35 +1,53 @@
-const firebase = require("firebase-admin/app")
-const firestore = require("firebase-admin/firestore")
-const serviceAccount = require("./ServiceAccountKey.json")
+const firebase = require("firebase-admin/app");
+const firestore = require("firebase-admin/firestore");
+const fireStorage = require("./storage");
+
+const serviceAccount = require("./ServiceAccountKey.json");
 
 const app = firebase.initializeApp({
-	credential: firebase.cert(serviceAccount)
+	credential: firebase.cert(serviceAccount),
+	storageBucket: "projectshopiicnpm-d6027.appspot.com"
 });
 
 const db = firestore.getFirestore();
 
-const users = new Map()
-const emailMap = new Map()
+const users = new Map();
+const emailMap = new Map();
+//const products = new Map();
 
-db.collection("accounts").get().then((res) => {
-	console.log("Got user data from database");
+const storage = new fireStorage.Storage(app);
+
+db.collection("users").get().then((res) => {
 	res.forEach((doc) => {
 		let data = doc.data();
 		users.set(doc.id, data);
 		if (data.email)
 			emailMap.set(data.email, data);
-	})
+	});
+	console.log(`Loaded ${users.size} users`);
 });
 
-exports.getUser = function(username, debug=false)
+/*
+db.collection("products").get().then((res) => {
+	res.forEach((doc) => {
+		products.set(doc.id, doc.data());
+	});
+	console.log(`Loaded ${products.size} products`);
+})
+*/
+
+exports.getUser = async function(username, debug=false)
 {
-	if (users.has(username))
-		return users.get(username);
-	else {
+	if (!users.has(username)) {
 		if (debug)
-			console.log(`User '${username}' does not exists`)
+			console.log(`User '${username}' does not exists`);
 		return null;
 	}
+	
+	let data = users.get(username);
+	if (!data.profilePic)
+		data.profilePic = await storage.getProfilePicUrl(username);
+	return data;
 }
 
 exports.getUserByEmail = function(mailAdress, debug=false)
@@ -55,4 +73,9 @@ exports.registerUser = async function(username, userData)
 	await userDoc.set(userData)
 	
 	console.log("New user written to database successfully");
+}
+
+exports.getProduct = function(pid)
+{
+	return productId.get(pid);
 }
