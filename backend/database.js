@@ -43,7 +43,7 @@ exports.getUserByEmail = function(mailAdress, debug=false)
 	}
 }
 
-exports.newUser = async function(username, userData)
+exports.registerUser = async function(username, userData)
 {
 	if (userData.password.length < 8) {
 		console.log("Password is too short");

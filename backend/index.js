@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-const firebase = require("./firebase");
+const db = require("./database");
 
 let port = 3000;
 if (process.argv.length > 2) port = parseInt(process.argv[2]);
@@ -13,9 +13,9 @@ app.get("/login", async (req, res) => {
 	let mailAddress = req.query["email"];
 
 	if (username)
-		user = firebase.getUser(username);
+		user = db.getUser(username);
 	else
-		user = firebase.getUserByEmail(mailAddress);
+		user = db.getUserByEmail(mailAddress);
 
 	let respond = {
 		existed: false,
@@ -35,7 +35,7 @@ app.get("/login", async (req, res) => {
 	res.json(respond);
 })
 
-app.get("/register", (req, res) => {
+app.get("/register", async (req, res) => {
 	let username = req.query["username"]
 	let userData = {
 		password: req.query["password"],
@@ -45,6 +45,13 @@ app.get("/register", (req, res) => {
 		phone: req.query["phone"],
 		sex: req.query["sex"]
 	}
+	
+	await db.registerUser(username, userData);
+	res.sendStatus(200);
+})
+
+app.get("/product", (req, res) => {
+	res.sendStatus(200);
 })
 
 app.listen(port, () => { console.log(`Listening on port ${port}`); });
