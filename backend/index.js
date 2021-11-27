@@ -3,7 +3,8 @@ const morgan = require("morgan");
 const db = require("./database");
 
 let port = 3000;
-if (process.argv.length > 2) port = parseInt(process.argv[2]);
+if (process.argv.length > 2)
+	port = parseInt(process.argv[2]);
 
 const app = express();
 app.use(morgan("short"));
@@ -13,9 +14,9 @@ app.get("/login", async (req, res) => {
 	let mailAddress = req.query["email"];
 
 	if (username)
-		user = db.getUser(username);
+		user = await db.getUser(username);
 	else
-		user = db.getUserByEmail(mailAddress);
+		user = await db.getUserByEmail(mailAddress);
 
 	let respond = {
 		existed: false,
