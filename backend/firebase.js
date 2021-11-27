@@ -9,12 +9,15 @@ const app = firebase.initializeApp({
 const db = firestore.getFirestore();
 
 const users = new Map()
+const emailMap = new Map()
 
 db.collection("accounts").get().then((res) => {
 	console.log("Got user data from database");
 	res.forEach((doc) => {
 		let data = doc.data();
 		users.set(doc.id, data);
+		if (data.email)
+			emailMap.set(data.email, data);
 	})
 });
 
@@ -25,6 +28,17 @@ exports.getUser = function(username, debug=false)
 	else {
 		if (debug)
 			console.log(`User '${username}' does not exists`)
+		return null;
+	}
+}
+
+exports.getUserByEmail = function(mailAdress, debug=false)
+{
+	if (emailMap.has(mailAdress))
+		return emailMap.get(mailAdress);
+	else {
+		if (debug)
+			console.log(`Can't find '${mailAdress}' in the database`)
 		return null;
 	}
 }

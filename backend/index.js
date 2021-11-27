@@ -10,9 +10,19 @@ app.use(morgan("short"));
 
 app.get("/login", async (req, res) => {
 	let username = req.query["username"];
-	user = firebase.getUser(username);
-	
-	let respond = {existed: false, password: false, data: null};
+	let mailAddress = req.query["email"];
+
+	if (username)
+		user = firebase.getUser(username);
+	else
+		user = firebase.getUserByEmail(mailAddress);
+
+	let respond = {
+		existed: false,
+		password: false,
+		data: null
+	};
+
 	if (user != null) {
 		respond.existed = true;
 		if (user.password === req.query["password"]) {
