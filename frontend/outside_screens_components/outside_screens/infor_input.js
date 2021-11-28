@@ -188,59 +188,6 @@ const MyTextInput = ({label, icon, isFullname, isPhone,
     )
 }
 
-const GenderButton = ({setGender}) => {
-    const gender = ['male', 'female', 'other'];
-    const [selected=0, setSelected] = useState();
-    return (
-        <View style={{
-            paddingLeft: 120,
-            paddingTop: 20,
-            width: "70%",
-            justifyContent:'center',
-            flexDirection:'row',
-        }}>
-            {gender.map((val, key) => {
-                return(
-                    <View key={key}>
-                        {selected != key ?
-                        <TouchableOpacity style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginLeft: 20,
-                            marginBottom: 10
-                        }}
-                        onPress={() => {
-                            setSelected(key);
-                            if (key == 0) setGender("male");
-                            else if (key == 1) setGender("female");
-                            else setGender("other");
-                        }}>
-                            <MaterialCommunityIcons size={30} 
-                            name="circle-outline"
-                            color={darklight}/>
-                            <Text>{val}</Text>
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginLeft: 20,
-                            marginBottom: 10
-                        }}>
-                            <MaterialCommunityIcons size={30} 
-                            name="circle-slice-8"
-                            color={brand}/>
-                            <Text>{val}</Text>
-                        </TouchableOpacity>
-                        }
-                    </View>
-                )
-            })
-            }
-        </View>
-    )
-}
-
 const GenderField = ({setGender}) => {
     const [selected, setSelected] = useState("male");
     return (
