@@ -40,44 +40,46 @@ const Login = ({navigation}) =>{
 
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
-        const  url = ("https://shopii.loca.lt/login?"
+        const  url = ("https://wise-jellyfish-33.loca.lt/login?"
                     +"username="+credentials.email
                     +"&password="+credentials.password);
-        axios.post(url, credentials).then((response) => {
+        axios.get(url).then((response) => {
             const result = response.data;
             const {existed, password, data} = result;
-            if (existed !== "true"){
+            console.log(data);
+            if (existed !== true){
                 handleMessage("Error: the account may not created yet.", 
                             existed);
             }
             else{
-                if (password !== "true"){
+                if (password !== true){
                     handleMessage("Error: the password is not correct.", 
                             password);
                 }
                 else{
                     console.log("Welcome to our shopping app");
+                    credentials.email='';
+                    credentials.password='';
                 }
                 
             }
             setSubmitting(false);
-        }).catch(error => {
-            console.log(error.JSON());
+        }).catch((error) => {
+            console.log(error.JSON);
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        })
-    }
+        });
+    };
 
     const handleMessage = (mess, type = false) => {
         setMessage(mess);
         setMessageType(type);
-    }
+    };
 
     return (
         <Scroll_component>
-            <StyledContainer style={{paddingTop: 5}}
-            >
+            <StyledContainer style={{paddingTop: 10}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
                 
@@ -96,7 +98,6 @@ const Login = ({navigation}) =>{
                             else{
                                 handleLogin(values, setSubmitting);
                             }
-                            console.log(values);
                         }}>
                         {({handleChange, handleBlur,
                         handleSubmit, values, isSubmitting}) =>
@@ -136,7 +137,9 @@ const Login = ({navigation}) =>{
                                 onPress={() =>{
                                 navigation.navigate("MailInput");
                                 goto="ChangePwd";
-                                handleMessage(null)}}
+                                handleMessage(null);
+                                values.email='';
+                                values.password=''}}
                                 >
                                     Forgot password?
                                 </ExtraTextLink>
@@ -162,18 +165,6 @@ const Login = ({navigation}) =>{
                             <Emptyline style={{backgroundColor: darklight}}/>
 
                             <ExtraView>
-                                <ExtraText style={{fontSize: 12}}>
-                                    By using our services, you agree with our 
-                                </ExtraText>
-                                <ExtraLink>
-                                    <ExtraTextLink style= {{paddingLeft: 5,
-                                    fontSize: 12}}>
-                                        Term of services
-                                    </ExtraTextLink>
-                                </ExtraLink>
-                            </ExtraView>
-
-                            <ExtraView>
                                 <ExtraText>
                                     Don't have account already? 
                                 </ExtraText>
@@ -182,7 +173,9 @@ const Login = ({navigation}) =>{
                                     onPress={() =>{
                                     navigation.navigate("MailInput");
                                     goto="InforInput";
-                                    handleMessage(null)}}
+                                    handleMessage(null);
+                                    values.email='';
+                                    values.password=''}}
                                     >
                                         Sign-up
                                     </ExtraTextLink>

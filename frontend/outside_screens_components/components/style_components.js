@@ -159,7 +159,6 @@ export const ExtraView = styled.View`
     align-items: center;
     padding-left: 7px;
     padding-right: 7px;
-    padding-top: 7px;
 `;
 
 export const ExtraText = styled.Text`
@@ -192,4 +191,11 @@ export const SocialButtonPart = styled.View`
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
+`;
+
+export const MyRadioButton = styled.TouchableOpacity`
+    flex-direction: row;
+    align-items: center;
+    margin-left: 20px;
+    margin-bottom: 10px;
 `;

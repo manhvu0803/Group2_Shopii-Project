@@ -2,15 +2,15 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
+        Title, SubTitle,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon,
         StyledButton, ButtonText,
         Colors
 } from "./../components/style_components";
-import {View, TouchableOpacity}from "react-native";
-import {Octicons, Ionicons,
-        MaterialIcons, MaterialCommunityIcons
-} from "@expo/vector-icons";
+import {View, TouchableOpacity} from "react-native";
+import {Octicons, Ionicons} from "@expo/vector-icons";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Scroll_component from './../components/scroll_component';
 
 
@@ -22,37 +22,88 @@ const {brand, darklight, white, i_extra} = Colors;
 
 
 //Login implementation:
-const UsnPwdCreate = ({navigation}) =>{
+const Signup = ({navigation}) =>{
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
+    const [show, setShow] = useState(false);
+    const [date, setDate] = useState(new Date(2000, 0 ,1));
+
+    //Actual date of birth to be sent:
+    const [dob, setDob] = useState();
+    const onChange = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShow(false);
+        setDate(currentDate);
+        setDob(currentDate)
+    }
+
+    const showDatePicker = () => {
+        setShow(true);
+    }
 
     return (
         <Scroll_component>
-            <StyledContainer style={{paddingTop: 120}}>
+            <StyledContainer style={{paddingTop: 60}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
+                
+                    {show && (
+                        <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode='date'
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChange}
+                        />
+                    )}
 
                     <Formik
-                    initialValues={{username: '', password: '',
+                    initialValues={{fullname: '', email: '',
+                    dateOfBrith: '', password: '',
                     confirmpassword: ''}}
                     onSubmit={(values) => {
-                    console.log(values);
-                    navigation.popToTop();
-                    }}>
+                    console.log(values);}
+                    }>
                         {({handleChange, handleBlur,
                         handleSubmit, values}) =>
                         (<StyledFormArea>
+                            {/*account input:*/}
                             <MyTextInput
-                            label="Username"
-                            icon="rename-box"
-                            placeholder="Username"
+                            label="Full name"
+                            icon="person"
+                            placeholder="Nguyen Van A"
                             placeholderTextColor={darklight}
-                            onChangeText={handleChange('username')}
-                            onBlur={handleBlur('username')}
-                            value={values.username}
-                            isUsername={true}
+                            onChangeText={handleChange('fullname')}
+                            onBlur={handleBlur('fullname')}
+                            values={values.fullname}
                             />
 
+                            <MyTextInput
+                            label="User account"
+                            icon="mail"
+                            placeholder="Email, username, phonenumber"
+                            placeholderTextColor={darklight}
+                            onChangeText={handleChange('email')}
+                            onBlur={handleBlur('email')}
+                            value={values.email}
+                            keyboardType="email-address"
+                            />
+
+                            <MyTextInput
+                            label="Date of birth"
+                            icon="calendar"
+                            placeholder="Sat Jan 01 2000"
+                            placeholderTextColor={darklight}
+                            onChangeText={handleChange('dateOfBirth')}
+                            onBlur={handleBlur('dateOfBirth')}
+                            value={dob ? values.dateOfBrith = dob.toDateString() : ''}
+                            isDate={true}
+                            editable={false}
+                            showDatePicker={showDatePicker}
+                            />
+
+                            {/*password input:*/}
                             <MyTextInput
                             label="Password"
                             icon="lock"
@@ -66,7 +117,6 @@ const UsnPwdCreate = ({navigation}) =>{
                             hidePassword = {hidePwd}
                             setHiddenPassword = {setHiddenpwd}
                             />
-
                             <MyTextInput
                             label="Confirm password"
                             icon="lock"
@@ -81,7 +131,8 @@ const UsnPwdCreate = ({navigation}) =>{
                             setHiddenConfirmPassword = {setHiddenconfirmpwd}
                             />
 
-                            <StyledButton onPress={handleSubmit}>
+                            <StyledButton
+                            onPress={handleSubmit}>
                                 <ButtonText>
                                     Sign-up
                                 </ButtonText>
@@ -96,32 +147,26 @@ const UsnPwdCreate = ({navigation}) =>{
     );
 }
 
-const MyTextInput = ({label, icon, isUsername, 
-    isPassword, hidePassword, setHiddenPassword,
+const MyTextInput = ({label, icon,
+    isPassword, hidePassword, setHiddenPassword, isDate, showDatePicker,
     isConfirmPassword, hideConfirmPassword, setHiddenConfirmPassword,
     ...props}) => {
     return (
         <View>
-            <StyledInputLabel>{label}</StyledInputLabel>
-
-            <StyledTextInput {...props}/>
-
-            {isUsername && <LeftIcon style={{paddingLeft: 11}}>
-                <MaterialCommunityIcons name={icon} size={30}
-                color={i_extra}/>
-            </LeftIcon>}
-
-            {!isUsername && <LeftIcon>
+            <LeftIcon>
                 <Octicons name={icon} size={30} color={i_extra}/>
-            </LeftIcon>}
-            
+            </LeftIcon>
+            <StyledInputLabel>{label}</StyledInputLabel>
+            {!isDate && <StyledTextInput {...props}/>}
+            {isDate && <TouchableOpacity onPress={showDatePicker}>
+                <StyledTextInput {...props}/>
+                </TouchableOpacity>}
             {isPassword && (
                 <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
                     <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}
                     size={30} color={darklight}/>
                 </RightIcon>
             )}
-
             {isConfirmPassword && (
                 <RightIcon onPress={() =>
                     setHiddenConfirmPassword(!hideConfirmPassword)}>
@@ -134,4 +179,4 @@ const MyTextInput = ({label, icon, isUsername,
     )
 }
 
-export default UsnPwdCreate;
+export default Signup;

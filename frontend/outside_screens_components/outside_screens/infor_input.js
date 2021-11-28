@@ -5,6 +5,7 @@ import{ StyledContainer, Innercontainer,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon,
         StyledButton, ButtonText,
+        MyRadioButton,
         Colors
 } from "./../components/style_components";
 import {View, TouchableOpacity, Text}from "react-native";
@@ -187,6 +188,59 @@ const MyTextInput = ({label, icon, isFullname, isPhone,
     )
 }
 
+const GenderButton = ({setGender}) => {
+    const gender = ['male', 'female', 'other'];
+    const [selected=0, setSelected] = useState();
+    return (
+        <View style={{
+            paddingLeft: 120,
+            paddingTop: 20,
+            width: "70%",
+            justifyContent:'center',
+            flexDirection:'row',
+        }}>
+            {gender.map((val, key) => {
+                return(
+                    <View key={key}>
+                        {selected != key ?
+                        <TouchableOpacity style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                            marginBottom: 10
+                        }}
+                        onPress={() => {
+                            setSelected(key);
+                            if (key == 0) setGender("male");
+                            else if (key == 1) setGender("female");
+                            else setGender("other");
+                        }}>
+                            <MaterialCommunityIcons size={30} 
+                            name="circle-outline"
+                            color={darklight}/>
+                            <Text>{val}</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                            marginBottom: 10
+                        }}>
+                            <MaterialCommunityIcons size={30} 
+                            name="circle-slice-8"
+                            color={brand}/>
+                            <Text>{val}</Text>
+                        </TouchableOpacity>
+                        }
+                    </View>
+                )
+            })
+            }
+        </View>
+    )
+}
+
 const GenderField = ({setGender}) => {
     const [selected, setSelected] = useState("male");
     return (
@@ -197,101 +251,53 @@ const GenderField = ({setGender}) => {
             justifyContent:'center',
             flexDirection:'row',
         }}>
-            {selected != "male" ?
-            <TouchableOpacity 
-                style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-                }}
-                onPress={() => {
-                setSelected("male");
-                setGender("male");
-            }}>
-                <MaterialCommunityIcons size={30} 
-                    name="circle-outline"
-                    color={darklight}/>
-                    <Text>male</Text>
-
-            </TouchableOpacity>
-            :
-            <TouchableOpacity style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-            }}>
-                <MaterialCommunityIcons size={30} 
-                name="circle-slice-8"
-                color={brand}/>
+            <MyRadioButton
+            onPress={() => {
+                if (selected !== "male"){
+                    setSelected("male");
+                    setGender("male");
+                }
+            }}
+            >
+                <MaterialCommunityIcons size={30}
+                    name={selected != "male" ?
+                    "circle-outline":"circle-slice-8"}
+                    color={selected != "male" ?
+                    darklight:brand}/>
                 <Text>male</Text>
-            </TouchableOpacity>
-            }
+            </MyRadioButton>
 
-            {selected != "female" ?
-            <TouchableOpacity 
-                style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-                }}
-                onPress={() => {
-                setSelected("female");
-                setGender("female");
-            }}>
-                <MaterialCommunityIcons size={30} 
-                    name="circle-outline"
-                    color={darklight}/>
-                    <Text>female</Text>
-
-            </TouchableOpacity>
-            :
-            <TouchableOpacity style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-            }}>
-                <MaterialCommunityIcons size={30} 
-                name="circle-slice-8"
-                color={brand}/>
+            <MyRadioButton
+            onPress={() => {
+                if (selected !== "female"){
+                    setSelected("female");
+                    setGender("female");
+                }
+            }}
+            >
+                <MaterialCommunityIcons size={30}
+                    name={selected != "female" ?
+                    "circle-outline":"circle-slice-8"}
+                    color={selected != "female" ?
+                    darklight:brand}/>
                 <Text>female</Text>
-            </TouchableOpacity>
-            }
+            </MyRadioButton>
 
-            {selected != "other" ?
-            <TouchableOpacity 
-                style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-                }}
-                onPress={() => {
-                setSelected("other");
-                setGender("other");
-            }}>
-                <MaterialCommunityIcons size={30} 
-                    name="circle-outline"
-                    color={darklight}/>
-                    <Text>other</Text>
-
-            </TouchableOpacity>
-            :
-            <TouchableOpacity style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginLeft: 20,
-                marginBottom: 10
-            }}>
-                <MaterialCommunityIcons size={30} 
-                name="circle-slice-8"
-                color={brand}/>
+            <MyRadioButton
+            onPress={() => {
+                if (selected !== "other"){
+                    setSelected("other");
+                    setGender("other");
+                }
+            }}
+            >
+                <MaterialCommunityIcons size={30}
+                    name={selected != "other" ?
+                    "circle-outline":"circle-slice-8"}
+                    color={selected != "other" ?
+                    darklight:brand}/>
                 <Text>other</Text>
-            </TouchableOpacity>
-            }
+            </MyRadioButton>
         </View>
     )
 }

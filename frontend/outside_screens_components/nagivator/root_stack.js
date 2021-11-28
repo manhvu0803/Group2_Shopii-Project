@@ -24,55 +24,41 @@ const RootStack = () => {
                 headerTitle: '',
                 headerLeftContainerStyle: {
                     paddingleft: 20
+                },
+                headerTitleStyle: {
+                    fontSize: 25,
                 }
             }}  
             initialRouteName="Login"
             >
-                <Stack.Screen options={{title:"Login page",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                <Stack.Screen options={{
+                title:"Login",
+                headerTitleAlign:'center',}}
                 name="Login" component={Login}/>
 
                 <Stack.Screen options={{
-                title: "Mail input",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                title:"Mail Input",
+                headerTitleAlign:'center',}}
                 name="MailInput" component={MailInput}/>
 
                 <Stack.Screen options={{
-                title: "Mail verifying",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                title:"Mail verify",
+                headerTitleAlign:'center',}}
                 name="MailVerify" component={MailVerify}/>
 
                 <Stack.Screen options={{
                 title:"Personal information",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                headerTitleAlign:'center',}}
                 name="InforInput" component={InforInput}/>
 
                 <Stack.Screen options={{
                 title:"Create account",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                headerTitleAlign:'center',}}
                 name="UsnPwdCreate" component={UsnPwdCreate}/>
 
                 <Stack.Screen options={{
                 title:"Change password",
-                headerTitleAlign:'center',
-                headerTitleStyle: {fontWeight: 'bold',
-                fontSize: 30,
-                }}}
+                headerTitleAlign:'center',}}
                 name="ChangePwd" component={ChangePwd}/>
             </Stack.Navigator>
         </NavigationContainer>
