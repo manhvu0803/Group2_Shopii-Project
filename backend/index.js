@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const db = require("./database");
 
-let port = 3000;
+let port = process.env.PORT || 3000;
 if (process.argv.length > 2)
 	port = parseInt(process.argv[2]);
 
