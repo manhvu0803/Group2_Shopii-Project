@@ -1,11 +1,15 @@
 const mailer = require("./mailer");
+const firestore = require("firebase-admin/firestore")
 
 const sessions = new Map();
 const sessionDuration = 1000 * 60 * 60 * 24;
 
-exports.checkExpiration = function(email)
+exports.expired = function(email)
 {
-	return sessions.get(email).timeCreated - Date.now() > sessionDuration;
+	let obj = sessions.get(email);
+	if (!obj)
+		return true;
+	return Date.now() - obj.timeCreated > sessionDuration;
 }
 
 exports.newLoginSession = function(email)
@@ -17,14 +21,22 @@ exports.newLoginSession = function(email)
 
 exports.verify = function(email, code)
 {
-	return exports.checkExpiration(email) && code === sessions.get(email).verifyCode;
+	if (!exports.expired(email) && code == sessions.get(email).verifyCode) {
+		sessions.get(email).verified = true;
+		console.log("Verified email");
+		return true;
+	}
+	return false;
 }
 
 exports.updateSessionData = function(email, newData)
 {
+	if (!sessions.get(email).verified)
+		return;
 	let data = sessions.get(email);
 	for (let prop in newData)
-		data[prop] = newData[prop];
+		if (newData[prop])
+			data[prop] = newData[prop];
 }
 
 exports.removeSessionData = function(email, property)
@@ -34,7 +46,7 @@ exports.removeSessionData = function(email, property)
 
 exports.getSession = function(email)
 {
-	if (exports.checkExpiration(email))
+	if (exports.expired(email))
 		return null;
 	return sessions.get(email);
 }
@@ -48,4 +60,22 @@ exports.completed = function(email)
 {
 	let data = sessions.get(email);
 	return data.username_ && data.password && data.dob && data.address && data.phone && data.sex
+}
+
+exports.finalize = function(email_)
+{
+	let dt = sessions.get(email_);;
+	let newUser = {
+		username: dt.username_,
+		data: {
+			password: dt.password,
+			dob: firestore.Timestamp.fromMillis(parseInt(dt.dob)),
+			address: dt.address,
+			phone: dt.phone,
+			sex: dt.sex,
+			email: email_
+		}
+	}
+	sessions.delete(email_);
+	return newUser;
 }
