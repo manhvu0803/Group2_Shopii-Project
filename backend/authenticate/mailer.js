@@ -8,9 +8,9 @@ const transport = mailer.createTransport({
 	}
 })
 
-exports.sendVerifyMail = function(code, mailAdress) {
+exports.sendVerifyMail = function(code, mailAddress) {
 	let message = {
-		to: mailAdress,
+		to: mailAddress,
 		subject: "Shopii verification",
 		text: `Your test code is ${code}`
 	}
@@ -21,6 +21,6 @@ exports.sendVerifyMail = function(code, mailAdress) {
 			return;
 		}
 	
-		console.log(`Sent: ${info.messageId}`);
+		console.log(`Sent verify email`);
 	})
 }

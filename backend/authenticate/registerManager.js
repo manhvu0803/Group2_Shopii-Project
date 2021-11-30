@@ -43,3 +43,9 @@ exports.deleteSession = function(email)
 {
 	return sessions.delete(email);
 }
+
+exports.completed = function(email)
+{
+	let data = sessions.get(email);
+	return data.username_ && data.password && data.dob && data.address && data.phone && data.sex
+}
