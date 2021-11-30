@@ -62,7 +62,7 @@ const InforInput = ({navigation, route}) =>{
         handleMessage(null);
         const {fullname, dateOfBirth, phonenb, gender, address}
              = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/login?" 
+        const  url = ("https://wise-jellyfish-33.loca.lt/information_input?" 
                     + "email=" + email 
                     + "&fullname=" + fullname + "&dateOfBrith="+dateOfBirth
                     + "&phoneumber=" + phonenb + "&gender=" + gender 

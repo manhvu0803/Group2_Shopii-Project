@@ -44,7 +44,7 @@ const UsnPwdCreate = ({navigation, route}) =>{
     const handleUSNPWD_Create = (credentials, setSubmitting) => {
         handleMessage(null);
         const {username, password} = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/login?" 
+        const  url = ("https://wise-jellyfish-33.loca.lt/create_username_pass?" 
                     + "email=" + email 
                     + "&username=" + username + "&password=" + password);
         console.log(url);

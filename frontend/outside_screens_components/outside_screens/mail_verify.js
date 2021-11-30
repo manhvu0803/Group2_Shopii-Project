@@ -38,7 +38,7 @@ const MailVerify = ({navigation, route}) =>{
     const handleMailVerify = (credentials, setSubmitting) => {
         handleMessage(null);
         const codeveri = credentials.code;
-        const  url = ("https://wise-jellyfish-33.loca.lt/mailinput?"
+        const  url = ("https://wise-jellyfish-33.loca.lt/mailverify?"
                     +"email="+email+"&verifycode="+codeveri);
         console.log(url);
         navigation.replace(goto, {email});

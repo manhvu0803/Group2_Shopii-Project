@@ -40,7 +40,7 @@ const ChangePwd = ({navigation, route}) =>{
     const handleChangePWD = (credentials, setSubmitting) => {
         handleMessage(null);
         const {newpassword} = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/login?" 
+        const  url = ("https://wise-jellyfish-33.loca.lt/changepassword?" 
                     + "email=" + email + "&newpassword=" + newpassword);
         console.log(url);
         navigation.popToTop();

@@ -25,3 +25,11 @@ _Put outside_screens, components, navigator folder into the folder of the projec
 _Put the image Logo.png in to the assets folder (will be generate automatically with your project)
 _Only import RootStack from './nagivator/root_stack'; in Apps.js file to run the project.
 (Not sure if these files can work with project created with react-native-cli)
+
+Request:
+_Login: https://wise-jellyfish-33.loca.lt/login?username=<username>&password=<password>
+_Mail input: https://wise-jellyfish-33.loca.lt/mailinput?email=<email>
+_Mail verify: "https://wise-jellyfish-33.loca.lt/mailverify?email=<email>&verifycode=<codeverify>
+_Information input: https://wise-jellyfish-33.loca.lt/information_input?email=<email>&fullname=<fullname>&dateofbrith=<dateOfBirth>&phoneumber=<phonenb>&gender=<gender>&address=<address>
+_Create username and password: https://wise-jellyfish-33.loca.lt/create_username_pass?email=<email>&username=<username>&password=<password>
+_Change password: https://wise-jellyfish-33.loca.lt/changepassword?email=<email>&newpassword=<newpassword>
