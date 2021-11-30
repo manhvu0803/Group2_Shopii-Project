@@ -1,20 +1,31 @@
 //import part:
+//style components:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
         StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon,
+        LeftIcon, Msgline,
         StyledButton, ButtonText,
         MyRadioButton,
         Colors
 } from "./../components/style_components";
-import {View, TouchableOpacity, Text}from "react-native";
+
+//base components of react-native
+import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
+
+//icon components:
 import {Octicons, MaterialIcons, FontAwesome5, 
         MaterialCommunityIcons
 } from "@expo/vector-icons";
+
+//Date time picker components:
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+//scroll component:
 import Scroll_component from './../components/scroll_component';
 
+//API client axios:
+import axios from 'axios';
 
 //formik:
 import { Formik } from 'formik';
@@ -23,10 +34,10 @@ import { Formik } from 'formik';
 const {brand, darklight, white, i_extra} = Colors;
 
 
-//Login implementation:
-const InforInput = ({navigation}) =>{
-    const [hidePwd, setHiddenpwd] = useState(true);
-    const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
+//Information input implementation:
+const InforInput = ({navigation, route}) =>{
+    const {email} = route.params;
+
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date(2000, 0 ,1));
     const [genderval, setGenderval] = useState("male");
@@ -43,13 +54,55 @@ const InforInput = ({navigation}) =>{
     const showDatePicker = () => {
         setShow(true);
     }
+    
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
+
+    const handleInforInput = (credentials, setSubmitting) => {
+        handleMessage(null);
+        const {fullname, dateOfBirth, phonenb, gender, address}
+             = credentials;
+        const  url = ("https://wise-jellyfish-33.loca.lt/login?" 
+                    + "email=" + email 
+                    + "&fullname=" + fullname + "&dateOfBrith="+dateOfBirth
+                    + "&phoneumber=" + phonenb + "&gender=" + gender 
+                    + "&address=" + address);
+        console.log(url);
+        navigation.navigate("UsnPwdCreate", {email});
+        setSubmitting(false);
+        /* axios.get(url).then((response) => {
+            const result = response.data;
+            const {phonenb_existed} = result;
+            console.log(phonenb_existed);
+            if (phonenb_existed === true){
+                handleMessage("Error: This phone number has been already " 
+                            + "used for an account.", false);
+            }
+            else{
+                navigation.navigate("UsnPwdCreate", {email,
+                                    fullname, dateOfBrith, 
+                                    phonenb, gender, address
+                                });
+            }
+            setSubmitting(false);
+        }).catch((error) => {
+            console.log(error.JSON);
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        }); */
+    };
+
+    const handleMessage = (mess, type = false) => {
+        setMessage(mess);
+        setMessageType(type);
+    };
 
     return (
         <Scroll_component>
             <StyledContainer style={{paddingTop: 55}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
-                
                     {show && (
                         <DateTimePicker
                         testID="dateTimePicker"
@@ -62,14 +115,39 @@ const InforInput = ({navigation}) =>{
                     )}
 
                     <Formik
-                    initialValues={{fullname: '', dateOfBrith: '',
+                    initialValues={{fullname: '', dateOfBirth: '',
                     phonenb: '', gender: '', address: ''}}
-                    onSubmit={(values) => {
-                    console.log(values);
-                    navigation.navigate("UsnPwdCreate");
+                    onSubmit={(values, {setSubmitting}) => {
+                        if (values.fullname=="" || 
+                            values.dateOfBirth=="" || 
+                            values.phonenb=="" || 
+                            values.gender=="" || 
+                            values.address==""){
+                            handleMessage("Please fill all the fields.");
+                            setSubmitting(false);
+                        }
+                        else{
+                            var valid_phn = true;
+                            const length = values.phonenb.length;
+                            for (var i = 0; i < length; i++){
+                                if (values.phonenb.charAt(i) < '0' || 
+                                    values.phonenb.charAt(i) > '9'){
+                                        valid_phn = false;
+                                        break;
+                                    }
+                            }
+                            if (valid_phn === true){
+                                handleInforInput(values, setSubmitting);
+                            }
+                            else{
+                                handleMessage("Phone number can only " 
+                                            + "contain number");
+                                setSubmitting(false);
+                            }
+                        }
                     }}>
                         {({handleChange, handleBlur,
-                        handleSubmit, values}) =>
+                        handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
                             <MyTextInput
                             label="Full name"
@@ -90,8 +168,9 @@ const InforInput = ({navigation}) =>{
                             onChangeText={handleChange('dateOfBirth')}
                             onBlur={handleBlur('dateOfBirth')}
                             value={dob ?
-                                   values.dateOfBrith = dob.toDateString()
-                                   : ''}
+                                   values.dateOfBirth = dob.toDateString()
+                                   : 
+                                   values.dateOfBirth = date.toDateString()}
                             isDate={true}
                             editable={false}
                             showDatePicker={showDatePicker}
@@ -131,12 +210,23 @@ const InforInput = ({navigation}) =>{
                             isAddress = {true}
                             />
 
-                            <StyledButton
+                            <Msgline type={messageType}>
+                                {message}
+                            </Msgline>
+
+                            {!isSubmitting && (<StyledButton
                             onPress={handleSubmit}>
                                 <ButtonText>
                                     Next
                                 </ButtonText>
+                            </StyledButton>)}
+
+                            {isSubmitting && (<StyledButton
+                            disabled={true}>
+                                <ActivityIndicator size="large"
+                                color={white}/>
                             </StyledButton>
+                            )}
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
@@ -146,7 +236,7 @@ const InforInput = ({navigation}) =>{
 }
 
 const MyTextInput = ({label, icon, isFullname, isPhone, 
-    isDate, showDatePicker, isGender, isAddress, value, setGender,
+    isDate, showDatePicker, isGender, isAddress, setGender,
     ...props}) => {
     
     return (

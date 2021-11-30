@@ -29,20 +29,21 @@ import { Formik } from 'formik';
 
 //Colors:
 const {darklight, white, i_extra} = Colors;
-var goto="";
 
 
 //Login implementation:
 const Login = ({navigation}) =>{
+    var goto="";
+    
     const [hidePwd, setHiddenpwd] = useState(true);
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
+        const {email, password} = credentials;
         const  url = ("https://wise-jellyfish-33.loca.lt/login?"
-                    +"username="+credentials.email
-                    +"&password="+credentials.password);
+                    +"username=" + email + "&password="+password);
         axios.get(url).then((response) => {
             const result = response.data;
             const {existed, password, data} = result;
@@ -58,8 +59,6 @@ const Login = ({navigation}) =>{
                 }
                 else{
                     console.log("Welcome to our shopping app");
-                    credentials.email='';
-                    credentials.password='';
                 }
                 
             }
@@ -82,7 +81,6 @@ const Login = ({navigation}) =>{
             <StyledContainer style={{paddingTop: 10}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
-                
                     <Logo resizeMode="cover"
                     source={require('./../assets/Logo.png')}/>
                     
@@ -92,7 +90,7 @@ const Login = ({navigation}) =>{
                         initialValues={{email: '', password: ''}}
                         onSubmit={(values, {setSubmitting}) => {
                             if (values.email=="" || values.password==""){
-                                handleMessage("Please fill all the fields");
+                                handleMessage("Please fill all the fields.");
                                 setSubmitting(false);
                             }
                             else{
@@ -135,11 +133,9 @@ const Login = ({navigation}) =>{
                             <ExtraLink style={{width:'40%'}}>
                                 <ExtraTextLink forgotpwd={true}
                                 onPress={() =>{
-                                navigation.navigate("MailInput");
                                 goto="ChangePwd";
                                 handleMessage(null);
-                                values.email='';
-                                values.password=''}}
+                                navigation.navigate("MailInput", {goto});}}
                                 >
                                     Forgot password?
                                 </ExtraTextLink>
@@ -170,12 +166,10 @@ const Login = ({navigation}) =>{
                                 </ExtraText>
                                 <ExtraLink>
                                     <ExtraTextLink style= {{paddingLeft: 5}}
-                                    onPress={() =>{
-                                    navigation.navigate("MailInput");
+                                    onPress={() =>{ 
                                     goto="InforInput";
                                     handleMessage(null);
-                                    values.email='';
-                                    values.password=''}}
+                                    navigation.navigate("MailInput", {goto});}}
                                     >
                                         Sign-up
                                     </ExtraTextLink>
@@ -245,4 +239,3 @@ const MyTextInput = ({label, icon,
 
 
 export default Login;
-export {goto};

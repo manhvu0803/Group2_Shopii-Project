@@ -1,7 +1,7 @@
 This folder contains all the outside screens, which includes:
 _login screen (done UI, done with login process, try to make the sign in with Google and Facebook work)
-_sign-up screen (second version UI, working with signup process)
-_get back password screen (second version UI, working with get back password process)
+_sign-up screen (second version UI, wait to text the sign-up process)
+_get back password screen (second version UI, wait to text the change password process)
 All the screens is impletemented with expo react native.
 
 

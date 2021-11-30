@@ -1,29 +1,67 @@
 //import part:
+//base components already available in node_module:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
+import {View, ActivityIndicator, Alert} from "react-native";
+
+//style components:
 import{ StyledContainer, Innercontainer,
-        Title, SubTitle,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon,
         StyledButton, ButtonText,
+        Msgline,
         Colors
 } from "./../components/style_components";
-import {View} from "react-native";
+//icon components:
 import {Octicons, Ionicons} from "@expo/vector-icons";
-import Scroll_component from './../components/scroll_component';
 
+//scroll components:
+import Scroll_component from './../components/scroll_component';
 
 //formik:
 import { Formik } from 'formik';
 
 //Colors:
-const {brand, darklight, white, i_extra} = Colors;
+const {darklight, white, i_extra} = Colors;
 
+//API client axios:
+import axios from 'axios';
 
 //Login implementation:
-const ChangePwd = ({navigation}) =>{
+const ChangePwd = ({navigation, route}) =>{
+    const {email} = route.params;
+
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
+
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
+
+    const handleChangePWD = (credentials, setSubmitting) => {
+        handleMessage(null);
+        const {newpassword} = credentials;
+        const  url = ("https://wise-jellyfish-33.loca.lt/login?" 
+                    + "email=" + email + "&newpassword=" + newpassword);
+        console.log(url);
+        navigation.popToTop();
+        Alert.alert("", "Change password successfully", 
+                    [{text: "continue"}]);
+        setSubmitting(false);
+        /* axios.get(url).then(() => {
+            navigation.popToTop();
+            setSubmitting(false);
+        }).catch((error) => {
+            console.log(error.JSON);
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        }); */
+    };
+
+    const handleMessage = (mess, type = false) => {
+        setMessage(mess);
+        setMessageType(type);
+    };
 
     return (
         <Scroll_component>
@@ -33,12 +71,25 @@ const ChangePwd = ({navigation}) =>{
 
                     <Formik
                     initialValues={{newpassword: '', confirmpassword: ''}}
-                    onSubmit={(values) => {
-                        console.log(values);
-                        navigation.popToTop();
+                    onSubmit={(values, {setSubmitting}) => {
+                        if (values.newpassword=="" || 
+                            values.confirmpassword==""){
+                            handleMessage("Please fill all the fields.");
+                            setSubmitting(false);
+                        }
+                        else if (values.newpassword 
+                                != 
+                                values.confirmpassword){
+                            handleMessage("Confirmpassword does not match"
+                                        + "Password.");
+                            setSubmitting(false);
+                        }
+                        else{
+                            handleChangePWD(values, setSubmitting);
+                        }
                     }}>
                         {({handleChange, handleBlur,
-                        handleSubmit, values}) =>
+                        handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
                             <MyTextInput
                             label="New password"
@@ -67,13 +118,25 @@ const ChangePwd = ({navigation}) =>{
                             setHiddenConfirmPassword = {setHiddenconfirmpwd}
                             />
 
-                            <StyledButton onPress={handleSubmit}>
+                            <Msgline type={messageType}>
+                                {message}
+                            </Msgline>
+
+                            {!isSubmitting && (<StyledButton
+                            onPress={handleSubmit}>
                                 <ButtonText>
                                     Change password
                                 </ButtonText>
                                 <Octicons name="pencil"
                                 color={white} size={25}/>
+                            </StyledButton>)}
+
+                            {isSubmitting && (<StyledButton
+                            disabled={true}>
+                                <ActivityIndicator size="large"
+                                color={white}/>
                             </StyledButton>
+                            )}
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>

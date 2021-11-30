@@ -1,4 +1,5 @@
 //import part:
+//style components:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import{ StyledContainer, Innercontainer,
@@ -8,19 +9,76 @@ import{ StyledContainer, Innercontainer,
         StyledButton, ButtonText,
         Colors
 } from "./../components/style_components";
-import {View, TouchableWithoutFeedback, Keyboard} from "react-native";
+
+//base components of react-native:
+import {View, TouchableWithoutFeedback, Keyboard, 
+        ActivityIndicator
+}from "react-native";
+
+//icon components:
 import {Octicons} from "@expo/vector-icons";
+
+//API client axios:
+import axios from 'axios';
 
 
 //formik:
 import { Formik } from 'formik';
 
 //Colors:
-const {darklight, i_extra} = Colors;
+const {darklight, i_extra, white} = Colors;
 
 
-//Login implementation:
-const MailInput = ({navigation}) =>{
+//Mail input implementation:
+const MailInput = ({navigation, route}) =>{
+    const {goto} = route.params
+
+    const [message, setMessage] = useState();
+    const [messageType, setMessageType] = useState();
+
+    const handleMailInput = (credentials, setSubmitting) => {
+        handleMessage(null);
+        const email = credentials.email;
+        const  url = ("https://wise-jellyfish-33.loca.lt/mailinput?"
+                    +"email="+email);
+        console.log(url);
+        navigation.navigate("MailVerify", {goto, email});
+        setSubmitting(false);
+        /* axios.get(url).then((response) => {
+            const result = response.data;
+            const {existed} = result;
+            console.log(existed);
+            if (goto === "InforInput"){
+                if (existed === true){
+                    handleMessage("Error: This email already used " 
+                                + "for an account.", false);
+                }
+                else{
+                    navigation.navigate("MailVerify", {goto, email});
+                }
+            }
+            else{
+                if (existed === true){
+                    navigation.navigate("MailVerify", {goto, email});
+                }
+                else{
+                    handleMessage("Error: This email has not been used "
+                                + "for any account.", false)
+                }
+            }
+            setSubmitting(false);
+        }).catch((error) => {
+            console.log(error.JSON);
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        }); */
+    };
+
+    const handleMessage = (mess, type = false) => {
+        setMessage(mess);
+        setMessageType(type);
+    };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}
@@ -29,15 +87,19 @@ const MailInput = ({navigation}) =>{
             <StyledContainer style={{paddingTop: 200}}>
                 <StatusBar style="dark"/>
                 <Innercontainer>
-
                     <Formik
                     initialValues={{email: ''}}
-                    onSubmit={(values) => {
-                    console.log(values);
-                    navigation.navigate("MailVerify");}
-                    }>
+                    onSubmit={(values, {setSubmitting}) => {
+                        if (values.email==""){
+                            handleMessage("Please input your email first.");
+                            setSubmitting(false);
+                        }
+                        else{
+                            handleMailInput(values, setSubmitting);
+                        }
+                    }}>
                         {({handleChange, handleBlur,
-                        handleSubmit, values}) =>
+                        handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
                             {/*account input:*/}
 
@@ -52,16 +114,23 @@ const MailInput = ({navigation}) =>{
                             keyboardType="email-address"
                             />
 
-                            <Msgline style={{color: darklight}}>
-                                ...
+                            <Msgline type={messageType}>
+                                {message}
                             </Msgline>
 
-                            <StyledButton
+                            {!isSubmitting && (<StyledButton
                             onPress={handleSubmit}>
                                 <ButtonText>
                                     Next
                                 </ButtonText>
+                            </StyledButton>)}
+
+                            {isSubmitting && (<StyledButton
+                            disabled={true}>
+                                <ActivityIndicator size="large"
+                                color={white}/>
                             </StyledButton>
+                            )}
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
