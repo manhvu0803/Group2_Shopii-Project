@@ -69,7 +69,7 @@ exports.registerUser = async function(username, userData)
 	}
 	
 	users.set(username, userData);
-	const userDoc = await db.collection("accounts").doc(username);
+	const userDoc = await db.collection("users").doc(username);
 	await userDoc.set(userData)
 	
 	console.log("New user written to database successfully");
