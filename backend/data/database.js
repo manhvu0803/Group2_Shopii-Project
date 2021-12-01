@@ -77,10 +77,31 @@ exports.registerUser = async function(username, userData)
 	}
 	
 	users.set(username, userData);
-	const userDoc = await db.collection("users").doc(username);
-	await userDoc.set(userData)
+	let userDoc = db.collection("users").doc(username);
+	await userDoc.set(userData);
 	
 	console.log("New user written to database successfully");
+}
+
+async function _updateField(user, fieldName, newData)
+{
+	user[fieldName] = newData;
+	let userDoc = db.collection("users").doc(username);
+	await userDoc.set(userData);
+
+	console.log("User data is updated")
+}
+
+exports.updateField = function(username, fieldName, newData)
+{
+	let user = users.get(username);
+	_updateField(user, fieldName, data);
+}
+
+exports.updateFieldByEmail = function(email, fieldName, newData)
+{
+	let user = emailMap.get(email);
+	_updateField(user, fieldName, data);
 }
 
 exports.getProduct = function(pid)

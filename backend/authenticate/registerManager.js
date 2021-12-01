@@ -2,7 +2,7 @@ const mailer = require("./mailer");
 const firestore = require("firebase-admin/firestore")
 
 const sessions = new Map();
-const sessionDuration = 1000 * 60 * 60 * 24;
+const sessionDuration = 1000 * 60 * 30; // 60 minutes
 
 exports.expired = function(email)
 {
