@@ -17,6 +17,8 @@ const emailMap = new Map();
 
 const storage = new fireStorage.Storage(app);
 
+var ready = false;
+
 db.collection("users").get().then((res) => {
 	res.forEach((doc) => {
 		let data = doc.data();
@@ -24,6 +26,7 @@ db.collection("users").get().then((res) => {
 		if (data.email)
 			emailMap.set(data.email, data);
 	});
+	exports.ready = true;
 	console.log(`Loaded ${users.size} users`);
 });
 
@@ -35,6 +38,11 @@ db.collection("products").get().then((res) => {
 	console.log(`Loaded ${products.size} products`);
 })
 */
+
+exports.ready = function()
+{
+	return isReady && storage.ready;
+};
 
 exports.getUser = async function(username, debug=false)
 {

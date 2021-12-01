@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 
-const db = require("./database");
+const db = require("./data/database.js");
 const registerManager = require("./authenticate/registerManager");
 
 let port = process.env.PORT || 3000;
@@ -10,6 +10,10 @@ if (process.argv.length > 2)
 
 const app = express();
 app.use(morgan(":method :url :status [:date[clf]] :response-time ms"));
+
+app.get("/ready", (req, res) => {
+	res.send(db.ready());
+});
 
 app.get("/login", async (req, res) => {
 	let username = req.query["username"];

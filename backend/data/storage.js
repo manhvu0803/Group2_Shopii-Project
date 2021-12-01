@@ -4,12 +4,16 @@ exports.Storage = class Storage
 {
 	constructor(app)
 	{
+		this.ready = false;
 		this.bucket = firebaseSt.getStorage(app).bucket();
+		
 		this.bucket.exists().then((res) => {
 			if (res[0])
 				console.log("Connected to storage");
 			else
 				throw new Error("Can't connect to storage");
+
+			this.ready = true;
 		})
 	}
 
