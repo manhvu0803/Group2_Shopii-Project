@@ -22,8 +22,7 @@ exports.Storage = class Storage
 		let duration = 1000 * 60 * 60 * 24;
 		let file = this.bucket.file(`users/${username}/profilepic.jpg`);
 		let exists = await file.exists();
-		
-		console.log(exists);
+
 		if (!exists[0]) {
 			console.error(`${username}'s profile picture not found`);
 			return null;

@@ -24,7 +24,7 @@ db.collection("users").get().then((res) => {
 		let data = doc.data();
 		users.set(doc.id, data);
 		if (data.email)
-			emailMap.set(data.email, data);
+			emailMap.set(data.email, doc.id);
 	});
 	isReady = true;
 	console.log(`Loaded ${users.size} users`);
@@ -61,7 +61,7 @@ exports.getUser = async function(username, debug=false)
 exports.getUserByEmail = function(mailAdress, debug=false)
 {
 	if (emailMap.has(mailAdress))
-		return emailMap.get(mailAdress);
+		return exports.getUser(emailMap.get(mailAdress));
 	else {
 		if (debug)
 			console.log(`Can't find '${mailAdress}' in the database`)
@@ -83,25 +83,20 @@ exports.registerUser = async function(username, userData)
 	console.log("New user written to database successfully");
 }
 
-async function _updateField(user, fieldName, newData)
+exports.updateField = async function(username, fieldName, newData)
 {
+	let user = users.get(username);
 	user[fieldName] = newData;
 	let userDoc = db.collection("users").doc(username);
-	await userDoc.set(userData);
+	await userDoc.set(user);
 
 	console.log("User data is updated")
 }
 
-exports.updateField = function(username, fieldName, newData)
-{
-	let user = users.get(username);
-	_updateField(user, fieldName, data);
-}
-
 exports.updateFieldByEmail = function(email, fieldName, newData)
 {
-	let user = emailMap.get(email);
-	_updateField(user, fieldName, data);
+	
+	exports.updateField(emailMap.get(email), fieldName, newData);
 }
 
 exports.getProduct = function(pid)

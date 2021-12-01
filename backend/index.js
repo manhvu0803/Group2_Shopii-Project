@@ -67,6 +67,7 @@ app.get("/verify", (req, res) => {
 app.get("/forgotpassword", (req, res) => {
 	let email = req.query.email;
 	let code = req.query.verifycode;
+	let password = req.query.password;
 
 	if (password) {
 		if (registerManager.getSession(email).verified) {
