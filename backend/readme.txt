@@ -1,6 +1,10 @@
 The server is hosted at shopii-spirit.herokuapp.com
 To access the server, contact nmvu19
 
+Ready
+https://shopii-spirit.herokuapp.com/ready
+Respond true if the server is ready
+
 Login
 https://shopii-spirit.herokuapp.com/login?username=<username>&password=<password>
 Respond: a json that contain:
