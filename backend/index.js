@@ -3,14 +3,28 @@ const morgan = require("morgan");
 
 const db = require("./data/database.js");
 const registerManager = require("./authenticate/registerManager");
-const { json } = require("express");
+
+function parseUserData(username, data)
+{
+	if (data["dob"] && !parseInt(data["dob"]))
+		throw new TypeError("Date of birth is not epoch");
+
+	return {
+		username_: username,
+		password: data["password"],
+		dob: data["dob"],
+		address: data["address"],
+		phone: data["phone"],
+		sex: data["sex"]
+	}
+}
 
 let port = process.env.PORT || 3000;
 if (process.argv.length > 2)
 	port = parseInt(process.argv[2]);
 
 const app = express();
-app.use(morgan(":method :url :status [:date[clf]] :response-time ms"));
+app.use(morgan(":method :status [:date[clf]] :response-time ms"));
 
 app.get("/ready", (req, res) => {
 	res.send(db.ready());
@@ -126,13 +140,13 @@ app.get("/register", async (req, res) => {
 	}
 
 	// Parse user data
-	let userData = {
-		username_: username,
-		password: req.query["password"],
-		dob: req.query["dob"],
-		address: req.query["address"],
-		phone: req.query["phone"],
-		sex: req.query["sex"]
+	let userData;
+	try {
+		userData = parseUserData(username, req.query);
+	}
+	catch (e) {
+		res.json({ error: e.message });
+		return;
 	}
 	registerManager.updateSessionData(email, userData);
 	
@@ -144,11 +158,11 @@ app.get("/register", async (req, res) => {
 		return;
 	}
 
-	res.sendStatus(200);
+	res.json({ infoReceived: true });
 })
 
 app.get("/product", (req, res) => {
-	res.sendStatus(200);
+	res.sendStatus(202);
 })
 
 app.listen(port, () => { console.log(`Listening on port ${port}`); });
