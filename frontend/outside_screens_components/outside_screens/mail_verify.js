@@ -1,19 +1,19 @@
 //import part:
-//style components:
+//base components of react-native:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
-import{ StyledContainer, Innercontainer,
-        Msgline,
-        StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon,
-        StyledButton, ButtonText,
-        Colors
-} from "./../components/style_components";
-
-//base components of react-native:
 import {View, TouchableWithoutFeedback, Keyboard, 
         ActivityIndicator
 } from "react-native";
+
+//style components:
+import{ StyledContainer, Innercontainer,
+    Msgline,
+    StyledFormArea, StyledInputLabel, StyledTextInput,
+    LeftIcon,
+    StyledButton, ButtonText,
+    Colors
+} from "./../components/style_components";
 
 //icon components:
 import {Octicons} from "@expo/vector-icons";
@@ -38,16 +38,15 @@ const MailVerify = ({navigation, route}) =>{
     const handleMailVerify = (credentials, setSubmitting) => {
         handleMessage(null);
         const codeveri = credentials.code;
-        const  url = ("https://wise-jellyfish-33.loca.lt/mailverify?"
+        const  url = ("https://shopii-spirit.herokuapp.com/verify?"
                     +"email="+email+"&verifycode="+codeveri);
         console.log(url);
-        navigation.replace(goto, {email});
-        setSubmitting(false);
-        /* axios.get(url).then((response) => {
+        /* navigation.replace(goto, {email});
+        setSubmitting(false); */
+        axios.get(url).then((response) => {
             const result = response.data;
-            const {valid_code} = result;
-            console.log(valid_code);
-            if (valid_code !== true){
+            const {verified} = result;
+            if (verified !== true){
                 handleMessage("Error: The verify code is " 
                             + "not correct.", false);
             }
@@ -60,7 +59,7 @@ const MailVerify = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

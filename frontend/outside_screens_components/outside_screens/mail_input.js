@@ -1,7 +1,12 @@
 //import part:
-//style components:
+//base components of react-native:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
+import {View, TouchableWithoutFeedback, Keyboard, 
+        ActivityIndicator
+}from "react-native";
+
+//style components:
 import{ StyledContainer, Innercontainer,
         Msgline,
         StyledFormArea, StyledInputLabel, StyledTextInput,
@@ -9,11 +14,6 @@ import{ StyledContainer, Innercontainer,
         StyledButton, ButtonText,
         Colors
 } from "./../components/style_components";
-
-//base components of react-native:
-import {View, TouchableWithoutFeedback, Keyboard, 
-        ActivityIndicator
-}from "react-native";
 
 //icon components:
 import {Octicons} from "@expo/vector-icons";
@@ -39,31 +39,42 @@ const MailInput = ({navigation, route}) =>{
     const handleMailInput = (credentials, setSubmitting) => {
         handleMessage(null);
         const email = credentials.email;
-        const  url = ("https://wise-jellyfish-33.loca.lt/mailinput?"
+        const  url = ("https://shopii-spirit.herokuapp.com/verify?"
                     +"email="+email);
         console.log(url);
-        navigation.navigate("MailVerify", {goto, email});
-        setSubmitting(false);
-        /* axios.get(url).then((response) => {
+        /* navigation.navigate("MailVerify", {goto, email});
+        setSubmitting(false); */
+        axios.get(url).then((response) => {
             const result = response.data;
-            const {existed} = result;
-            console.log(existed);
+            const {registered, verifyCodeSent} = result;
             if (goto === "InforInput"){
-                if (existed === true){
+                if (registered === true){
                     handleMessage("Error: This email already used " 
                                 + "for an account.", false);
                 }
                 else{
-                    navigation.navigate("MailVerify", {goto, email});
+                    if (verifyCodeSent === true){
+                        navigation.navigate("MailVerify", {goto, email});
+                    }
+                    else{
+                        handleMessage("Error: Error occurred while sending "
+                                + "verify code. Please try again", false);
+                    }
                 }
             }
             else{
-                if (existed === true){
-                    navigation.navigate("MailVerify", {goto, email});
+                if (registered === true){
+                    if (verifyCodeSent === true){
+                        navigation.navigate("MailVerify", {goto, email});
+                    }
+                    else{
+                        handleMessage("Error: Error occurred while sending "
+                                + "verify code. Please try again", false);
+                    }
                 }
                 else{
                     handleMessage("Error: This email has not been used "
-                                + "for any account.", false)
+                                + "for any account.", false);
                 }
             }
             setSubmitting(false);
@@ -72,7 +83,7 @@ const MailInput = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

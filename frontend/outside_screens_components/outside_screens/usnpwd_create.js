@@ -33,7 +33,7 @@ import axios from 'axios';
 
 //Create username and password implementation:
 const UsnPwdCreate = ({navigation, route}) =>{
-    const {email} = route.params;
+    const {email, fullname, dob, phonenb, gender, address} = route.params;
 
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
@@ -44,23 +44,25 @@ const UsnPwdCreate = ({navigation, route}) =>{
     const handleUSNPWD_Create = (credentials, setSubmitting) => {
         handleMessage(null);
         const {username, password} = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/create_username_pass?" 
+        const  url = ("https://shopii-spirit.herokuapp.com/register?" 
                     + "email=" + email 
-                    + "&username=" + username + "&password=" + password);
+                    + "&username=" + username + "&password=" + password 
+                    + "&fullname=" + fullname + "&dob=" + dob 
+                    + "&phone=" + phonenb +"&sex=" + gender 
+                    + "&address=" + address);
         console.log(url);
-        Alert.alert("", "Create account successfully", 
-                    [{text: "continue"}]);
-        navigation.popToTop();
-        setSubmitting(false);
-        /* axios.get(url).then((response) => {
+        /* navigation.popToTop();
+        setSubmitting(false); */
+        axios.get(url).then((response) => {
             const result = response.data;
-            const {username_existed} = result;
-            console.log(username_existed);
-            if (username_existed === true){
-                handleMessage("Error: This username has been already " 
-                            + "used for an account.", false);
+            const {registered, reason} = result;
+            console.log(result);
+            if (registered === false){
+                handleMessage("Error: " + reason, false);
             }
             else{
+                Alert.alert("", "Create account successfully", 
+                            [{text: "continue"}]);
                 navigation.popToTop();
             }
             setSubmitting(false);
@@ -69,7 +71,7 @@ const UsnPwdCreate = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {
@@ -98,7 +100,27 @@ const UsnPwdCreate = ({navigation, route}) =>{
                             setSubmitting(false);
                         }
                         else{
-                            handleUSNPWD_Create(values, setSubmitting);
+                            var count_alphabet = 0;
+                            const length = values.username.length;
+                            for (var i = 0; i < length; i++){
+                                if (
+                                    values.username.charAt(i) >= 'A' &&
+                                    values.username.charAt(i) <= 'Z'
+                                    || 
+                                    values.username.charAt(i) >= 'a' &&
+                                    values.username.charAt(i) <= 'z'
+                                ){
+                                    count_alphabet++;
+                                }
+                            }
+                            if (count_alphabet == 0){
+                                handleMessage("Username must have " 
+                                            + "at least " 
+                                            + "1 alphabet character.");
+                            }
+                            else{
+                                handleUSNPWD_Create(values, setSubmitting);
+                            }
                         }
                     }}>
                         {({handleChange, handleBlur,
@@ -178,7 +200,10 @@ const MyTextInput = ({label, icon, isUsername,
         <View>
             <StyledInputLabel>{label}</StyledInputLabel>
 
-            <StyledTextInput {...props}/>
+            {isUsername && <StyledTextInput {...props}/>}
+
+            {!isUsername && 
+                <StyledTextInput style={{paddingRight: 55}} {...props}/>}
 
             {isUsername && <LeftIcon style={{paddingLeft: 11}}>
                 <MaterialCommunityIcons name={icon} size={30}

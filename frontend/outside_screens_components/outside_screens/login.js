@@ -1,7 +1,10 @@
 //import part:
-//style components:
+//base components of react-native:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
+import {View, Text, ActivityIndicator} from "react-native";
+
+//style components:
 import{ StyledContainer, Innercontainer,
         Logo,
         StyledFormArea, StyledInputLabel, StyledTextInput,
@@ -10,9 +13,6 @@ import{ StyledContainer, Innercontainer,
         ExtraView, ExtraText, ExtraLink, ExtraTextLink,
         SocialButtonPart, Colors, StatusBarHeight
 } from "./../components/style_components";
-
-//base components of react-native:
-import {View, Text, ActivityIndicator} from "react-native";
 
 //icon components:
 import {Octicons, Ionicons, Fontisto, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -42,7 +42,7 @@ const Login = ({navigation}) =>{
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
         const {email, password} = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/login?"
+        const  url = ("https://shopii-spirit.herokuapp.com/login?"
                     +"username=" + email + "&password="+password);
         axios.get(url).then((response) => {
             const result = response.data;
@@ -226,7 +226,12 @@ const MyTextInput = ({label, icon,
                 </LeftIcon>
             )}
             <StyledInputLabel>{label}</StyledInputLabel>
-            <StyledTextInput {...props}/>
+            {!isPassword && (
+                <StyledTextInput {...props}/>
+            )}
+            {isPassword && (
+                <StyledTextInput style={{paddingRight: 55}} {...props}/>
+            )}
             {isPassword && (
                 <RightIcon onPress={() => setHiddenPassword(!hidePassword)}>
                     <Ionicons name={hidePassword ? "md-eye-off" : "md-eye"}

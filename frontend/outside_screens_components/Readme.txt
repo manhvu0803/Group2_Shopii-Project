@@ -1,7 +1,7 @@
 This folder contains all the outside screens, which includes:
 _login screen (done UI, done with login process, try to make the sign in with Google and Facebook work)
-_sign-up screen (second version UI, wait to text the sign-up process)
-_get back password screen (second version UI, wait to text the change password process)
+_sign-up screen (done UI, wait to text the sign-up process)
+_get back password screen (done UI, wait to text the change password process)
 All the screens is impletemented with expo react native.
 
 
@@ -26,10 +26,10 @@ _Put the image Logo.png in to the assets folder (will be generate automatically 
 _Only import RootStack from './nagivator/root_stack'; in Apps.js file to run the project.
 (Not sure if these files can work with project created with react-native-cli)
 
+
 Request:
-_Login: https://wise-jellyfish-33.loca.lt/login?username=<username>&password=<password>
-_Mail input: https://wise-jellyfish-33.loca.lt/mailinput?email=<email>
-_Mail verify: "https://wise-jellyfish-33.loca.lt/mailverify?email=<email>&verifycode=<codeverify>
-_Information input: https://wise-jellyfish-33.loca.lt/information_input?email=<email>&fullname=<fullname>&dateofbrith=<dateOfBirth>&phoneumber=<phonenb>&gender=<gender>&address=<address>
-_Create username and password: https://wise-jellyfish-33.loca.lt/create_username_pass?email=<email>&username=<username>&password=<password>
-_Change password: https://wise-jellyfish-33.loca.lt/changepassword?email=<email>&newpassword=<newpassword>
+_Login: https://shopii-spirit.herokuapp.com/login?username=<username>&password=<password>
+_Mail input: https://shopii-spirit.herokuapp.com/verify?email=<email address>
+_Mail verify: https://shopii-spirit.herokuapp.com/verify?email=<email address>&verifycode=<code>
+_Create username and password: https://shopii-spirit.herokuapp.com/register?email=<email>&username=<username>&password=<password>&fullname=<fullname>&dob=<dob>&phone=<phonenb>&sex=<gender>&address=<address>
+_Change password: https://shopii-spirit.herokuapp.com/forgotpassword?email=<email>&password=<newpassword>

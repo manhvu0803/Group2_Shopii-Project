@@ -21,6 +21,7 @@ export const Colors = {
     fb: '#0a82f1',
     gg: '#f72d2d',
     i_extra: '#43e6c2',
+    placeholder: '#e9e8e8e0',
 };
 
 const {white, main_bg, tertiary, darklight, brand, fb, gg, i_extra} = Colors;

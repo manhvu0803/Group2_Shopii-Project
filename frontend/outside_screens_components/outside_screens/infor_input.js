@@ -1,7 +1,10 @@
 //import part:
-//style components:
+//base components of react-native
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
+import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
+
+//style components:
 import{ StyledContainer, Innercontainer,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, Msgline,
@@ -9,9 +12,6 @@ import{ StyledContainer, Innercontainer,
         MyRadioButton,
         Colors
 } from "./../components/style_components";
-
-//base components of react-native
-import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
 
 //icon components:
 import {Octicons, MaterialIcons, FontAwesome5, 
@@ -42,13 +42,10 @@ const InforInput = ({navigation, route}) =>{
     const [date, setDate] = useState(new Date(2000, 0 ,1));
     const [genderval, setGenderval] = useState("male");
 
-    //Actual date of birth to be sent:
-    const [dob, setDob] = useState();
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setShow(false);
         setDate(currentDate);
-        setDob(currentDate)
     }
 
     const showDatePicker = () => {
@@ -60,43 +57,39 @@ const InforInput = ({navigation, route}) =>{
 
     const handleInforInput = (credentials, setSubmitting) => {
         handleMessage(null);
-        const {fullname, dateOfBirth, phonenb, gender, address}
+        const {fullname, dob, phonenb, gender, address}
              = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/information_input?" 
-                    + "email=" + email 
-                    + "&fullname=" + fullname + "&dateOfBrith="+dateOfBirth
-                    + "&phoneumber=" + phonenb + "&gender=" + gender 
-                    + "&address=" + address);
-        console.log(url);
-        navigation.navigate("UsnPwdCreate", {email});
+        navigation.navigate("UsnPwdCreate", 
+                            {email, fullname, dob, phonenb, 
+                            gender, address});
         setSubmitting(false);
-        /* axios.get(url).then((response) => {
-            const result = response.data;
-            const {phonenb_existed} = result;
-            console.log(phonenb_existed);
-            if (phonenb_existed === true){
-                handleMessage("Error: This phone number has been already " 
-                            + "used for an account.", false);
-            }
-            else{
-                navigation.navigate("UsnPwdCreate", {email,
-                                    fullname, dateOfBrith, 
-                                    phonenb, gender, address
-                                });
-            }
-            setSubmitting(false);
-        }).catch((error) => {
-            console.log(error.JSON);
-            setSubmitting(false);
-            handleMessage("An error occurred."+ 
-            "Check your network and try again.");
-        }); */
     };
 
     const handleMessage = (mess, type = false) => {
         setMessage(mess);
         setMessageType(type);
     };
+
+    const toTimeStamp = (aDate) => {
+        const default_DateStr = aDate.toDateString();
+        const temp = default_DateStr.split(" ");
+        var timestamp = temp[2] + "/";
+        if (temp[1] == "Jan") timestamp += "01";
+        else if (temp[1] == "Feb") timestamp += "02";
+        else if (temp[1] == "Mar") timestamp += "03";
+        else if (temp[1] == "Apr") timestamp += "04";
+        else if (temp[1] == "May") timestamp += "05";
+        else if (temp[1] == "Jun") timestamp += "06";
+        else if (temp[1] == "Jul") timestamp += "07";
+        else if (temp[1] == "Aug") timestamp += "08";
+        else if (temp[1] == "Sep") timestamp += "09";
+        else if (temp[1] == "Oct") timestamp += "10";
+        else if (temp[1] == "Nov") timestamp += "11";
+        else timestamp += "12";
+        timestamp += ("/" + temp[3]);
+
+        return timestamp;
+    }
 
     return (
         <Scroll_component>
@@ -115,11 +108,11 @@ const InforInput = ({navigation, route}) =>{
                     )}
 
                     <Formik
-                    initialValues={{fullname: '', dateOfBirth: '',
+                    initialValues={{fullname: '', dob: '',
                     phonenb: '', gender: '', address: ''}}
                     onSubmit={(values, {setSubmitting}) => {
                         if (values.fullname=="" || 
-                            values.dateOfBirth=="" || 
+                            values.dob=="" || 
                             values.phonenb=="" || 
                             values.gender=="" || 
                             values.address==""){
@@ -165,12 +158,9 @@ const InforInput = ({navigation, route}) =>{
                             icon="calendar"
                             placeholder="Sat Jan 01 2000"
                             placeholderTextColor='black'
-                            onChangeText={handleChange('dateOfBirth')}
-                            onBlur={handleBlur('dateOfBirth')}
-                            value={dob ?
-                                   values.dateOfBirth = dob.toDateString()
-                                   : 
-                                   values.dateOfBirth = date.toDateString()}
+                            onChangeText={handleChange('dob')}
+                            onBlur={handleBlur('dob')}
+                            value={values.dob = toTimeStamp(date)}
                             isDate={true}
                             editable={false}
                             showDatePicker={showDatePicker}

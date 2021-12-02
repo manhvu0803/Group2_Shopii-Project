@@ -40,15 +40,25 @@ const ChangePwd = ({navigation, route}) =>{
     const handleChangePWD = (credentials, setSubmitting) => {
         handleMessage(null);
         const {newpassword} = credentials;
-        const  url = ("https://wise-jellyfish-33.loca.lt/changepassword?" 
-                    + "email=" + email + "&newpassword=" + newpassword);
+        const  url = ("https://shopii-spirit.herokuapp.com/forgotpassword?" 
+                    + "email=" + email + "&password=" + newpassword);
         console.log(url);
         navigation.popToTop();
         Alert.alert("", "Change password successfully", 
                     [{text: "continue"}]);
         setSubmitting(false);
         /* axios.get(url).then(() => {
-            navigation.popToTop();
+            const result = response.data;
+            const {passwordUpdated} = result;
+            if (passwordUpdated === true){
+                Alert.alert("", "Change password successfully", 
+                            [{text: "continue"}]);
+                navigation.popToTop();
+            }
+            else{
+                handleMessage("Error: Error occurred while updating "
+                                + "password. Please try again", false);
+            }
             setSubmitting(false);
         }).catch((error) => {
             console.log(error.JSON);
