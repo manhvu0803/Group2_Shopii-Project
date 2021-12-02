@@ -77,6 +77,7 @@ exports.registerUser = async function(username, userData)
 	}
 	
 	users.set(username, userData);
+	emailMap.set(userData.email, username);
 	let userDoc = db.collection("users").doc(username);
 	await userDoc.set(userData);
 	

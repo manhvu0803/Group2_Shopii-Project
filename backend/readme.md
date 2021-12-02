@@ -32,10 +32,11 @@ Respond: a json that contain:
 ## Register
 /register?email={verified email address}&{user info queries}
 
-Respond:
-- A json {verified: false} if the email isn't verified
-- 200 OK if the server has received the data
-- A json {invalid: bool, reason: "..."} if the username is invalid
+Respond: A json that contains
+- {verified: false} if the email isn't verified
+- {infoReceived: true} if the info is received properly
+- {invalid: bool, reason: "..."} if the username is invalid
+- {registrationCompleted: true} if the user info is completed and user is registered
 
 ## Forgot password
 /forgotpassword?email={email address}

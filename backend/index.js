@@ -46,7 +46,7 @@ app.get("/login", async (req, res) => {
 	};
 
 	if (user != null) {
-		respond.existed = true;
+		respond.registered = true;
 		if (user.password === req.query["password"]) {
 			respond.password = true;
 			
@@ -154,7 +154,7 @@ app.get("/register", async (req, res) => {
 	if (registerManager.completed(email)) {
 		let newUser = registerManager.finalize(email);
 		await db.registerUser(newUser.username, newUser.data);
-		res.json({ registered: true });
+		res.json({ registrationCompleted: true });
 		return;
 	}
 
