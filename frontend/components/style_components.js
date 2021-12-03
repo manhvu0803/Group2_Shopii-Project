@@ -83,7 +83,26 @@ export const StyledTextInput = styled.TextInput`
     color: ${tertiary};
 `;
 
+export const StyledTextOutput = styled.Text`
+    background-color: ${main_bg};
+    padding: 15px;
+    padding-left: 55px;
+    padding-right: 5px;
+    font-size: 16px;
+    height: 60px;
+    margin-vertical: 3px;
+    margin-bottom: 10px;
+    color: ${tertiary};
+`;
+
 export const StyledInputLabel = styled.Text`
+    color: ${tertiary};
+    font-size: 15px;
+    text-align: left;
+    font-weight: bold;
+`;
+
+export const StyledOutputLabel = styled.Text`
     color: ${tertiary};
     font-size: 15px;
     text-align: left;
