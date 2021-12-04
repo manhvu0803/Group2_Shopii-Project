@@ -11,6 +11,7 @@ Respond true if the server is ready
 Respond: a json that contain:
 - registered: true if the user exists
 - password: true if the password is correct
+- sessionId: the ID of this login session
 - data: contain user data if the user exists and the password is correct
 - error: null if there aren't any error
 
@@ -23,7 +24,6 @@ The server will sent a code to that mail address
 
 Respond: a json that contain:
 - verified: true if the email is verified and ready to be used
-- registered: true if that mail address is already registered
 - verifyCodeSent: true if the code is sent
 
 ## Register

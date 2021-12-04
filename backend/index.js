@@ -58,19 +58,16 @@ app.get("/login", async (req, res) => {
 	res.json(respond);
 })
 
-app.get("/verify", (req, res) => {
+app.get("/verify", async (req, res) => {
 	let email = req.query.email;
 	let verifyCode = req.query.verifycode;
 	let respond = {
 		verified: false,
-		registered: false,
 		verifyCodeSent: false,
 		error: null
 	}
 
-	if (db.getUserByEmail(email))
-		respond.registered = true;
-	else if (verifyCode) {
+	if (verifyCode) {
 		if (loginManager.verify(email, verifyCode))
 			respond.verified = true;
 	}
@@ -84,7 +81,7 @@ app.get("/verify", (req, res) => {
 	res.json(respond);
 })
 
-app.get("/forgotpassword", (req, res) => {
+app.get("/forgotpassword", async (req, res) => {
 	let email = req.query.email;
 	let password = req.query.password;
 	let respond = {
@@ -103,7 +100,7 @@ app.get("/forgotpassword", (req, res) => {
 			respond.registered = true;
 		}
 	}
-	else if (db.getUserByEmail(email)) {
+	else if (await db.getUserByEmail(email)) {
 		loginManager.newLoginSession(email);
 		respond.registered = true;
 	};
