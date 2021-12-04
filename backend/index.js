@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 
 const db = require("./data/database.js");
-const registerManager = require("./authenticate/registerManager");
+const loginManager = require("./authenticate/loginManager");
 
 function parseUserData(username, data)
 {
@@ -42,14 +42,14 @@ app.get("/login", async (req, res) => {
 	let respond = {
 		registered: false,
 		password: false,
-		data: null
+		data: null,
+		error: null
 	};
 
 	if (user != null) {
 		respond.registered = true;
 		if (user.password === req.query["password"]) {
 			respond.password = true;
-			
 			respond.data = Object.assign({}, user);
 			delete respond.data.password;
 		}
@@ -61,104 +61,91 @@ app.get("/login", async (req, res) => {
 app.get("/verify", (req, res) => {
 	let email = req.query.email;
 	let verifyCode = req.query.verifycode;
-
-	if (db.getUserByEmail(email)) {
-		res.json({ registered: true });
-		return;
+	let respond = {
+		verified: false,
+		registered: false,
+		verifyCodeSent: false,
+		error: null
 	}
+
+	if (db.getUserByEmail(email))
+		respond.registered = true;
 	else if (verifyCode) {
-		if (registerManager.verify(email, verifyCode))
-			res.json({ verified: true });
-		else
-			res.json({ verified: false });
-		return;
+		if (loginManager.verify(email, verifyCode))
+			respond.verified = true;
+	}
+	else if (email) {
+		loginManager.newLoginSession(email);
 	}
 
-	registerManager.newLoginSession(email);
-	res.json({ registered: false, verifyCodeSent: true });
+	if (loginManager.getSession(email))
+		respond.verifyCodeSent = true;
+
+	res.json(respond);
 })
 
 app.get("/forgotpassword", (req, res) => {
 	let email = req.query.email;
-	let code = req.query.verifycode;
 	let password = req.query.password;
-
-	if (password) {
-		if (registerManager.getSession(email).verified) {
-			db.updateFieldByEmail(email, "password", password);
-			registerManager.deleteSession(email);
-			res.json({ passwordUpdated: true });
-		}
-		else 
-			res.json({ passwordUpdated: false });
-		return;
+	let respond = {
+		registered: false,
+		passwordUpdated: false,
+		error: null
 	}
 	
-	if (code) {
-		if (registerManager.verify(email, code)) {
-			res.json({ verified: true });
+	if (!loginManager.getSession(email).verified)
+		respond.error = "email not verified";
+	else if (password) {
+		if (respond.verified) {
+			db.updateFieldByEmail(email, "password", password);
+			loginManager.deleteSession(email);
+			respond.passwordUpdated = true;
+			respond.registered = true;
 		}
-		else
-			res.json({ verified: false });
-		return;
 	}
-
-	if (db.getUserByEmail(email)) {
-		registerManager.newLoginSession(email);
-		res.json({ registered: true, verifyCodeSent: true });
-		return;
+	else if (db.getUserByEmail(email)) {
+		loginManager.newLoginSession(email);
+		respond.registered = true;
 	};
 
-	res.json({ registered: false });
+	res.json(respond);
 })
 
 app.get("/register", async (req, res) => {
-	// Check if email is being used for registering
-	let email = req.query.email;
-	if (!email || !registerManager.getSession(email).verified) {
-		res.json({ verified: false });
-		return;
+	let respond = {
+		infoReceived: false,
+		registrationCompleted: false,
+		error: null,
 	}
 
-	// Check username
-	let username = req.query["username"];
-	
-	if (username) {
-		let error = null;
-		if (!username.match(/^[a-zA-Z]/))
-			error = "invalid first character";
-		else if (await db.getUser(username))
-			error = "username registered";
+	try {
+		let email = req.query.email;
+		if (!email || !loginManager.getSession(email).verified)
+			throw new Error("email not verified");
 
-		if (error) {
-			res.json({
-				invalid: true,
-				reason: error
-			});
-			return;
+		let username = req.query["username"];
+		if (username) {
+			if (!username.match(/^[a-zA-Z]/))
+				throw new Error("invalid first character");
+			else if (await db.getUser(username))
+				throw new Error("username registered");
+		}
+
+		let userData = parseUserData(username, req.query);
+		loginManager.updateSessionData(email, userData);
+		respond.infoReceived = true;
+
+		if (loginManager.completed(email)) {
+			let newUser = loginManager.finalize(email);
+			await db.registerUser(newUser.username, newUser.data);
+			respond.registrationCompleted = true;
 		}
 	}
-
-	// Parse user data
-	let userData;
-	try {
-		userData = parseUserData(username, req.query);
-	}
 	catch (e) {
-		res.json({ error: e.message });
-		return;
-	}
-	registerManager.updateSessionData(email, userData);
-	
-	// Write to database when date is completed
-	if (registerManager.completed(email)) {
-		let newUser = registerManager.finalize(email);
-		await db.registerUser(newUser.username, newUser.data);
-		res.json({ registrationCompleted: true });
-		return;
+		respond.error = e.message;
 	}
 
-	res.json({ infoReceived: true });
+	res.json(respond);
 })
 
 app.get("/product", (req, res) => {
