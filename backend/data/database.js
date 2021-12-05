@@ -69,6 +69,17 @@ exports.getUserByEmail = function(mailAdress, debug=false)
 	}
 }
 
+exports.getUsernameByEmail = function(mailAdress, debug=false)
+{
+	if (emailMap.has(mailAdress))
+		return emailMap.get(mailAdress);
+	else {
+		if (debug)
+			console.log(`Can't find '${mailAdress}' in the database`)
+		return null;
+	}
+}
+
 exports.registerUser = async function(username, userData)
 {
 	users.set(username, userData);
@@ -89,10 +100,32 @@ exports.updateField = async function(username, fieldName, newData)
 	console.log("User data is updated")
 }
 
-exports.updateFieldByEmail = function(email, fieldName, newData)
+exports.updateFields = async function(username, newData)
 {
-	
+	let user = users.get(username);
+	for (prop in user)
+		if (newData[prop] !== undefined)
+			user[prop] = newData[prop];
+	let userDoc = db.collection("users").doc(username);
+	await userDoc.set(user);
+
+	console.log("User data is updated")
+}
+
+exports.updateFieldByEmail = function(email, fieldName, newData)
+{	
 	exports.updateField(emailMap.get(email), fieldName, newData);
+}
+
+exports.deleteUser = async function(username)
+{
+	let email = users.get(username).email;
+	users.delete(username);
+	if (email)
+		emailMap.delete(email);
+
+	await db.collection("users").doc(username).delete();
+	console.log(`Deleted user ${username}`);
 }
 
 exports.getProduct = function(pid)

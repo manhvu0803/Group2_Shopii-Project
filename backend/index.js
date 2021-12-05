@@ -2,14 +2,15 @@ const express = require("express");
 const morgan = require("morgan");
 
 const db = require("./data/database.js");
-const loginManager = require("./authenticate/verifyManager");
+const verifyManager = require("./authenticate/verifyManager");
+const sessionManager = require("./authenticate/sessionManager");
 
 function parseUserData(username, data)
 {
 	if (data["dob"] && !parseInt(data["dob"]))
 		throw new TypeError("Date of birth is not epoch");
 
-	if (data["password"] && data["password"].length <= 8)
+	if (data["password"] && data["password"].length < 8)
 		throw new Error("password is too short")
 
 	return {
@@ -35,17 +36,20 @@ app.get("/ready", (req, res) => {
 
 app.get("/login", async (req, res) => {
 	let username = req.query["username"];
-	let mailAddress = req.query["email"];
+	let email = req.query["email"];
 
 	if (username)
 		user = await db.getUser(username);
-	else
-		user = await db.getUserByEmail(mailAddress);
+	else {
+		user = await db.getUserByEmail(email);
+		username = await db.getUsernameByEmail(email)
+	}
 
 	let respond = {
 		registered: false,
 		password: false,
 		data: null,
+		sessionId: null,
 		error: null
 	};
 
@@ -53,6 +57,7 @@ app.get("/login", async (req, res) => {
 		respond.registered = true;
 		if (user.password === req.query["password"]) {
 			respond.password = true;
+			respond.sessionId = sessionManager.newSession(username);
 			respond.data = Object.assign({}, user);
 			delete respond.data.password;
 		}
@@ -71,14 +76,14 @@ app.get("/verify", async (req, res) => {
 	}
 
 	if (verifyCode) {
-		if (loginManager.verify(email, verifyCode))
+		if (verifyManager.verify(email, verifyCode))
 			respond.verified = true;
 	}
 	else if (email) {
-		loginManager.newLoginSession(email);
+		verifyManager.newLoginSession(email);
 	}
 
-	if (loginManager.getSession(email))
+	if (verifyManager.getSession(email))
 		respond.verifyCodeSent = true;
 
 	res.json(respond);
@@ -93,18 +98,18 @@ app.get("/forgotpassword", async (req, res) => {
 		error: null
 	}
 	
-	if (!loginManager.getSession(email).verified)
+	if (!verifyManager.getSession(email).verified)
 		respond.error = "email not verified";
 	else if (password) {
 		if (respond.verified) {
 			db.updateFieldByEmail(email, "password", password);
-			loginManager.deleteSession(email);
+			verifyManager.deleteSession(email);
 			respond.passwordUpdated = true;
 			respond.registered = true;
 		}
 	}
 	else if (await db.getUserByEmail(email)) {
-		loginManager.newLoginSession(email);
+		verifyManager.newLoginSession(email);
 		respond.registered = true;
 	};
 
@@ -120,7 +125,7 @@ app.get("/register", async (req, res) => {
 
 	try {
 		let email = req.query.email;
-		if (!email || !loginManager.getSession(email).verified)
+		if (!email || !verifyManager.getSession(email).verified)
 			throw new Error("email not verified");
 
 		let username = req.query["username"];
@@ -132,11 +137,11 @@ app.get("/register", async (req, res) => {
 		}
 
 		let userData = parseUserData(username, req.query);
-		loginManager.updateSessionData(email, userData);
+		verifyManager.updateSessionData(email, userData);
 		respond.infoReceived = true;
 
-		if (loginManager.completed(email)) {
-			let newUser = loginManager.finalize(email);
+		if (verifyManager.completed(email)) {
+			let newUser = verifyManager.finalize(email);
 			await db.registerUser(newUser.username, newUser.data);
 			respond.registrationCompleted = true;
 		}
@@ -150,6 +155,59 @@ app.get("/register", async (req, res) => {
 
 app.get("/product", (req, res) => {
 	res.sendStatus(202);
+})
+
+function sessionHandle(req, callback)
+{
+	let sessionId = req.query.sessionId;
+	let respond = {
+		sessionExisted: false,
+		sessionExpired: false,
+		error: null
+	}
+
+	let check = sessionManager.check(sessionId);
+	if (check !== null) {
+		respond.sessionExisted = true;
+		if (!check)
+			respond.sessionExpired = true;
+		else 
+			callback(req, sessionManager.getUser(sessionId), respond);
+	}
+
+	return respond;
+}
+
+app.get("/delete", async (req, res) => {
+	let respond = sessionHandle(req, (req, username, respond) => {
+		let sessionId = req.query.sessionId;
+		sessionManager.deleteSession(sessionId);
+		try {
+			await db.deleteUser(username);
+			respond.accountDeleted = true;
+		}
+		catch (e) {
+			respond.accountDeleted = false;
+			respond.error = e.message;
+		}
+	})
+
+	res.json(respond);
+})
+
+app.get("/edit", async (req, res) => {
+	let respond = sessionHandle(req, (req, username, respond) => {
+		try {
+			await db.updateFields(username, req)
+			respond.infoUpdated = true;
+		}
+		catch (e) {
+			respond.infoUpdated = false;
+			respond.error = e.message;
+		}
+	})
+
+	res.json(respond);
 })
 
 app.listen(port, () => { console.log(`Listening on port ${port}`); });
