@@ -8,6 +8,8 @@ Respond true if the server is ready
 ## Login
 /login?username={username}&password={password}
 
+/login?email={email address}&password={password}
+
 Respond: a json that contain:
 - registered: true if the user exists
 - password: true if the password is correct
