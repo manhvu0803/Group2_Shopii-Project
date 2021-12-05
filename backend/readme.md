@@ -29,13 +29,15 @@ Respond: a json that contain:
 ## Register
 /register?email={verified email address}&{user info queries}
 
+Password string must have 8 or more characters
+
 Respond: A json that contains
 - infoReceived: true if the info is received properly
 - registrationCompleted: true if the user info is completed and user is registered
 - error: null if there aren't any error
 
 ## Forgot password
-/forgotpassword?email={verified email address}&password={code}
+/forgotpassword?email={verified email address}&password={string with length > 8}
 
 Respond: a json that contains:
 - registered: true if the email is linked with an account and can be used to reset password

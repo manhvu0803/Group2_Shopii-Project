@@ -2,12 +2,15 @@ const express = require("express");
 const morgan = require("morgan");
 
 const db = require("./data/database.js");
-const loginManager = require("./authenticate/loginManager");
+const loginManager = require("./authenticate/verifyManager");
 
 function parseUserData(username, data)
 {
 	if (data["dob"] && !parseInt(data["dob"]))
 		throw new TypeError("Date of birth is not epoch");
+
+	if (data["password"] && data["password"].length <= 8)
+		throw new Error("password is too short")
 
 	return {
 		username_: username,

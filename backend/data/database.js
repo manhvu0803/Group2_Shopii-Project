@@ -71,11 +71,6 @@ exports.getUserByEmail = function(mailAdress, debug=false)
 
 exports.registerUser = async function(username, userData)
 {
-	if (userData.password.length < 8) {
-		console.log("Password is too short");
-		return;
-	}
-	
 	users.set(username, userData);
 	emailMap.set(userData.email, username);
 	let userDoc = db.collection("users").doc(username);
