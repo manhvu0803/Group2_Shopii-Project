@@ -159,7 +159,7 @@ app.get("/product", (req, res) => {
 
 function sessionHandle(req, callback)
 {
-	let sessionId = req.query.sessionId;
+	let sessionId = req.query.sessionid;
 	let respond = {
 		sessionExisted: false,
 		sessionExpired: false,
@@ -180,7 +180,7 @@ function sessionHandle(req, callback)
 
 app.get("/delete", async (req, res) => {
 	let respond = sessionHandle(req, (req, username, respond) => {
-		let sessionId = req.query.sessionId;
+		let sessionId = req.query.sessionid;
 		sessionManager.deleteSession(sessionId);
 		try {
 			await db.deleteUser(username);

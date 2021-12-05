@@ -45,3 +45,21 @@ Respond: a json that contains:
 - registered: true if the email is linked with an account and can be used to reset password
 - passwordUpdated: true if the the email is verified and the password is updated
 - error: null if there aren't any error
+
+## Edit account info
+/edit?sessionid={session ID}&{user info queries}
+
+Respond: a json that contains:
+- sessionExisted: true if the session ID is correct
+- sessionExpired: true if the session is still active
+- error: null if there aren't any error
+- infoUpdated: true if user info is edited
+
+## Delete account
+/delete?sessionid={session ID}
+
+Respond: a json that contains:
+- sessionExisted: true if the session ID is correct
+- sessionExpired: true if the session is still active
+- error: null if there aren't any error
+- accountDeleted: true if user info and account is deleted
