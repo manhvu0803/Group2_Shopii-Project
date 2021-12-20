@@ -3,10 +3,11 @@ import {KeyboardAvoidingView, ScrollView,
         TouchableWithoutFeedback, Keyboard,
 } from "react-native";
 
-const Scroll_component=({children}) =>{
+const Scroll_component=({children, scrollEnabled = true}) =>{
     return (
         <KeyboardAvoidingView style={{flex:1}}>
-            <ScrollView keyboardShouldPersistTaps='handled'>
+            <ScrollView keyboardShouldPersistTaps='handled'
+                        scrollEnabled={scrollEnabled}>
                 {children}
             </ScrollView>
         </KeyboardAvoidingView>

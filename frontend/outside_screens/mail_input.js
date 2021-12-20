@@ -3,20 +3,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import {View, TouchableWithoutFeedback, Keyboard, 
-        ActivityIndicator
+        ActivityIndicator, TouchableOpacity, 
 }from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
+        Title,
         Msgline,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon,
         StyledButton, ButtonText,
-        Colors
+        Colors, StatusBarHeight
 } from "./../components/style_components";
 
 //icon components:
-import {Octicons} from "@expo/vector-icons";
+import {Octicons, Ionicons} from "@expo/vector-icons";
 
 //API client axios:
 import axios from 'axios';
@@ -26,12 +27,13 @@ import axios from 'axios';
 import { Formik } from 'formik';
 
 //Colors:
-const {darklight, i_extra, white} = Colors;
+const {brand, darklight, i_extra, white} = Colors;
 
 
 //Mail input implementation:
 const MailInput = ({navigation, route}) =>{
-    const {goto} = route.params
+    const {goto} = route.params;
+    const reason = route.params.reason ? route.params.reason : "";
 
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
@@ -39,16 +41,24 @@ const MailInput = ({navigation, route}) =>{
     const handleMailInput = (credentials, setSubmitting) => {
         handleMessage(null);
         const email = credentials.email;
-        const  url = ("https://shopii-spirit.herokuapp.com/verify?"
-                    +"email="+email);
+        var url;
+        if (goto === "InforInput"){
+            url = ("https://shopii-spirit.herokuapp.com/verify?"
+                    + "email="+email);
+        }
+        else{
+            url = ("https://shopii-spirit.herokuapp.com/forgotpassword?"
+                    + "email="+email);
+        }
         console.log(url);
-        /* navigation.navigate("MailVerify", {goto, email});
-        setSubmitting(false); */
-        axios.get(url).then((response) => {
+        navigation.navigate("MailVerify", {goto, email, reason});
+        setSubmitting(false);
+        /* axios.get(url).then((response) => {
             const result = response.data;
-            const {registered, verifyCodeSent} = result;
+            const {verified, verifyCodeSent, error} = result;
+            console.log(result);
             if (goto === "InforInput"){
-                if (registered === true){
+                if (verified === true){
                     handleMessage("Error: This email already used " 
                                 + "for an account.", false);
                 }
@@ -63,7 +73,7 @@ const MailInput = ({navigation, route}) =>{
                 }
             }
             else{
-                if (registered === true){
+                if (verified === true){
                     if (verifyCodeSent === true){
                         navigation.navigate("MailVerify", {goto, email});
                     }
@@ -83,7 +93,7 @@ const MailInput = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        });
+        }); */
     };
 
     const handleMessage = (mess, type = false) => {
@@ -95,9 +105,27 @@ const MailInput = ({navigation, route}) =>{
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}
         touchSoundDisabled={true} 
         >
-            <StyledContainer style={{paddingTop: 200}}>
+            <StyledContainer style={{
+                paddingTop: 10 + StatusBarHeight,
+                }}>
                 <StatusBar style="dark"/>
+                {/* header */}
+                <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    paddingBottom: 20,
+                    backgroundColor: white,
+                    width: "14%",
+                }}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <Ionicons name="chevron-back" 
+                            size={30} color={brand}/>
+                    </TouchableOpacity>
+                </View>
                 <Innercontainer>
+                    <Title style={{paddingBottom: 20}}>Mail Input</Title>
                     <Formik
                     initialValues={{email: ''}}
                     onSubmit={(values, {setSubmitting}) => {

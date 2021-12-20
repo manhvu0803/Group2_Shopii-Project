@@ -9,10 +9,10 @@ import{ StyledContainer, Innercontainer,
         Title,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, Msgline,
-        StyledButton, ButtonText,
+        StyledButton, ButtonText, SocialButtonPart,
         MyRadioButton,
         Colors, StatusBarHeight,
-} from "./../components/style_components";
+} from "../components/style_components";
 
 //icon components:
 import {Octicons, MaterialIcons, FontAwesome5, 
@@ -23,7 +23,7 @@ import {Octicons, MaterialIcons, FontAwesome5,
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 //scroll component:
-import Scroll_component from './../components/scroll_component';
+import Scroll_component from '../components/scroll_component';
 
 //API client axios:
 import axios from 'axios';
@@ -36,12 +36,13 @@ const {brand, darklight, white, i_extra} = Colors;
 
 
 //Information input implementation:
-const InforInput = ({navigation, route}) =>{
-    const {email} = route.params;
+const UserProfile = ({navigation, route}) =>{
+    //const {email, data} = route.params;
 
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date(2000, 0 ,1));
     const [genderval, setGenderval] = useState("male");
+    const [editing, setEditing] = useState(false);
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -98,26 +99,26 @@ const InforInput = ({navigation, route}) =>{
     }
 
     return (
-        <StyledContainer style={{
+        <Scroll_component>
+            <StyledContainer style={{
                 paddingTop: 10 + StatusBarHeight,
                 }}>
-            <StatusBar style="dark"/>
-            {/* header */}
-            <View style={{
+                <StatusBar style="dark"/>
+                {/* header */}
+                <View style={{
                     paddingLeft: 11.5,
                     paddingRight: 12,
                     paddingBottom: 8,
                     backgroundColor: white,
                     width: "14%",
-            }}>
-                <TouchableOpacity onPress={() => {
-                    navigation.goBack();
                 }}>
-                    <Ionicons name="chevron-back" 
-                        size={30} color={brand}/>
-                </TouchableOpacity>
-            </View>
-            <Scroll_component>
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <Ionicons name="chevron-back" 
+                            size={30} color={brand}/>
+                    </TouchableOpacity>
+                </View>
                 <Innercontainer>
                     {show && (
                         <DateTimePicker
@@ -130,7 +131,7 @@ const InforInput = ({navigation, route}) =>{
                         />
                     )}
                     <Title style={{paddingBottom: 20}}>
-                        Information Input
+                        Your Profile
                     </Title>
                     <Formik
                     initialValues={{fullname: '', dob: '',
@@ -167,6 +168,18 @@ const InforInput = ({navigation, route}) =>{
                         {({handleChange, handleBlur,
                         handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
+                            {editing==false?
+                            <MyTextView
+                            label="Full name"
+                            icon="person"
+                            placeholder="Nguyen Van A"
+                            placeholderTextColor='black'
+                            onChangeText={handleChange('fullname')}
+                            onBlur={handleBlur('fullname')}
+                            values={values.fullname}
+                            isFullname = {true}
+                            />
+                            :
                             <MyTextInput
                             label="Full name"
                             icon="person"
@@ -177,7 +190,22 @@ const InforInput = ({navigation, route}) =>{
                             values={values.fullname}
                             isFullname = {true}
                             />
+                            }
 
+                            {editing==false ?
+                            <MyTextView
+                            label="Date of birth"
+                            icon="calendar"
+                            placeholder="Sat Jan 01 2000"
+                            placeholderTextColor='black'
+                            onChangeText={handleChange('dob')}
+                            onBlur={handleBlur('dob')}
+                            value={values.dob = toTimeStamp(date)}
+                            isDate={true}
+                            editable={false}
+                            showDatePicker={showDatePicker}
+                            />
+                            :
                             <MyTextInput
                             label="Date of birth"
                             icon="calendar"
@@ -190,7 +218,20 @@ const InforInput = ({navigation, route}) =>{
                             editable={false}
                             showDatePicker={showDatePicker}
                             />
+                            }
 
+                            {editing== false ?
+                            <MyTextView
+                            label="Phone number"
+                            icon="contact-phone"
+                            placeholder="Your phone number"
+                            placeholderTextColor='black'
+                            onChangeText={handleChange('phonenb')}
+                            onBlur={handleBlur('phonenb')}
+                            value={values.phonenb}
+                            isPhone={true}
+                            />
+                            :
                             <MyTextInput
                             label="Phone number"
                             icon="contact-phone"
@@ -201,7 +242,21 @@ const InforInput = ({navigation, route}) =>{
                             value={values.phonenb}
                             isPhone={true}
                             />
+                            }
 
+                            {editing==false ?
+                            <MyTextView
+                            label="Gender"
+                            icon="transgender"
+                            placeholder="Male/female/3rd gender"
+                            placeholderTextColor='black'
+                            onChangeText={handleChange('gender')}
+                            onBlur={handleBlur('gender')}
+                            value={values.gender=genderval}
+                            setGender={setGenderval}
+                            isGender = {true}
+                            />
+                            :
                             <MyTextInput
                             label="Gender"
                             icon="transgender"
@@ -210,10 +265,24 @@ const InforInput = ({navigation, route}) =>{
                             onChangeText={handleChange('gender')}
                             onBlur={handleBlur('gender')}
                             value={values.gender=genderval}
+                            gender = {genderval}
                             setGender={setGenderval}
                             isGender = {true}
                             />
+                            }
 
+                            {editing==false ?
+                            <MyTextView
+                            label="Address"
+                            icon="address-book"
+                            placeholder="Your address"
+                            placeholderTextColor='black'
+                            onChangeText={handleChange('address')}
+                            onBlur={handleBlur('address')}
+                            value={values.address}
+                            isAddress = {true}
+                            />
+                            :
                             <MyTextInput
                             label="Address"
                             icon="address-book"
@@ -224,19 +293,34 @@ const InforInput = ({navigation, route}) =>{
                             value={values.address}
                             isAddress = {true}
                             />
+                            }
 
                             <Msgline type={messageType}>
                                 {message}
                             </Msgline>
 
-                            {!isSubmitting && (<StyledButton
-                            onPress={handleSubmit}>
+                            {editing==false && (<StyledButton
+                            onPress={() => {setEditing(true)}}>
                                 <ButtonText>
-                                    Next
+                                    Edit
                                 </ButtonText>
                             </StyledButton>)}
 
-                            {isSubmitting && (<StyledButton
+                            {(editing==true && !isSubmitting) 
+                            && (<SocialButtonPart>
+                                <StyledButton save={true}
+                                onPress={handleSubmit}>
+                                    <ButtonText>Save</ButtonText>
+                                </StyledButton>
+                        
+                                <StyledButton cancle={true}
+                                onPress={() => {setEditing(false)}}>
+                                    <ButtonText>Cancle</ButtonText>
+                                </StyledButton>
+                            </SocialButtonPart>)}
+
+                            {(editing==true && isSubmitting) 
+                            && (<StyledButton
                             disabled={true}>
                                 <ActivityIndicator size="large"
                                 color={white}/>
@@ -245,29 +329,33 @@ const InforInput = ({navigation, route}) =>{
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
-            </Scroll_component>
-        </StyledContainer>
+            </StyledContainer>
+        </Scroll_component>
     );
 }
 
-const MyTextInput = ({label, icon, isFullname, isPhone, 
-    isDate, showDatePicker, isGender, isAddress, setGender,
+const MyTextInput = ({label, icon, isFullname, isPhone,
+    isDate, showDatePicker, isGender, isAddress, setGender, gender,
     ...props}) => {
     
     return (
         <View>
             <StyledInputLabel>{label}</StyledInputLabel>
 
-            {(!isDate && !isGender) && <StyledTextInput {...props}/>}
-            {isDate && <TouchableOpacity onPress={showDatePicker}>
-            <StyledTextInput {...props}/>
-            </TouchableOpacity>}
+            {(!isDate && !isGender) && 
+                <StyledTextInput {...props}/>
+            }
+            {isDate && 
+            <TouchableOpacity onPress={showDatePicker}>
+                <StyledTextInput {...props}/>
+            </TouchableOpacity>
+            }
 
             {isGender && <View style={{
             height: 60,
             marginBottom: 10,
             }}>
-                <GenderField setGender={setGender}/>
+                <GenderField setGender={setGender} gender={gender}/>
             </View>}
 
             {isFullname && <LeftIcon style={{paddingLeft: 12}}>
@@ -293,61 +381,51 @@ const MyTextInput = ({label, icon, isFullname, isPhone,
     )
 }
 
-const GenderButton = ({setGender}) => {
-    const gender = ['male', 'female', 'other'];
-    const [selected=0, setSelected] = useState();
+const MyTextView = ({label, icon, isFullname, isPhone,
+    isDate, showDatePicker, isGender, isAddress, setGender, editing,
+    ...props}) => {
     return (
-        <View style={{
-            paddingLeft: 120,
-            paddingTop: 20,
-            width: "70%",
-            justifyContent:'center',
-            flexDirection:'row',
-        }}>
-            {gender.map((val, key) => {
-                return(
-                    <View key={key}>
-                        {selected != key ?
-                        <TouchableOpacity style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginLeft: 20,
-                            marginBottom: 10
-                        }}
-                        onPress={() => {
-                            setSelected(key);
-                            if (key == 0) setGender("male");
-                            else if (key == 1) setGender("female");
-                            else setGender("other");
-                        }}>
-                            <MaterialCommunityIcons size={30} 
-                            name="circle-outline"
-                            color={darklight}/>
-                            <Text>{val}</Text>
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginLeft: 20,
-                            marginBottom: 10
-                        }}>
-                            <MaterialCommunityIcons size={30} 
-                            name="circle-slice-8"
-                            color={brand}/>
-                            <Text>{val}</Text>
-                        </TouchableOpacity>
-                        }
-                    </View>
-                )
-            })
-            }
+        <View>
+            <StyledInputLabel>{label}</StyledInputLabel>
+
+            {(!isDate) && 
+                <StyledTextInput editable={editing}
+                    style={{backgroundColor: white}}
+                    {...props}
+                />}
+            {isDate && 
+            <TouchableOpacity onPress={showDatePicker} disabled={true}>
+                <StyledTextInput 
+                    style={{backgroundColor: white}}
+                    {...props}
+                />
+            </TouchableOpacity>}
+
+            {isFullname && <LeftIcon style={{paddingLeft: 12}}>
+                <MaterialIcons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isDate && <LeftIcon style={{paddingLeft: 14}}>
+                <Octicons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isPhone && <LeftIcon style={{paddingLeft: 11}}>
+                <MaterialIcons name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isGender && <LeftIcon style={{paddingLeft: 14}}>
+                <FontAwesome5 name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
+
+            {isAddress && <LeftIcon style={{paddingLeft: 12}}>
+                <FontAwesome5 name={icon} size={30} color={i_extra}/>
+            </LeftIcon>}
         </View>
     )
 }
 
-const GenderField = ({setGender}) => {
-    const [selected, setSelected] = useState("male");
+const GenderField = ({setGender, gender}) => {
+    const [selected, setSelected] = useState(gender ? gender : "male");
     return (
         <View style={{
             paddingLeft: 120,
@@ -407,4 +485,4 @@ const GenderField = ({setGender}) => {
     )
 }
 
-export default InforInput;
+export default UserProfile;

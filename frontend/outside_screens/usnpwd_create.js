@@ -2,15 +2,16 @@
 //base components already available in node_module:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
-import {View, ActivityIndicator, Alert}from "react-native";
+import {View, ActivityIndicator, Alert, TouchableOpacity}from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
+        Title,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon,
         StyledButton, ButtonText,
         Msgline,
-        Colors
+        Colors, StatusBarHeight,
 } from "./../components/style_components";
 
 //icon components:
@@ -25,7 +26,7 @@ import Scroll_component from './../components/scroll_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {darklight, white, i_extra} = Colors;
+const {brand, darklight, white, i_extra} = Colors;
 
 //API client axios:
 import axios from 'axios';
@@ -33,7 +34,8 @@ import axios from 'axios';
 
 //Create username and password implementation:
 const UsnPwdCreate = ({navigation, route}) =>{
-    const {email, fullname, dob, phonenb, gender, address} = route.params;
+    const {email, fullname, dobsent, phonenb, gender, address} 
+        = route.params;
 
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
@@ -47,23 +49,26 @@ const UsnPwdCreate = ({navigation, route}) =>{
         const  url = ("https://shopii-spirit.herokuapp.com/register?" 
                     + "email=" + email 
                     + "&username=" + username + "&password=" + password 
-                    + "&fullname=" + fullname + "&dob=" + dob 
+                    + "&fullname=" + fullname + "&dob=" + dobsent 
                     + "&phone=" + phonenb +"&sex=" + gender 
                     + "&address=" + address);
         console.log(url);
-        /* navigation.popToTop();
-        setSubmitting(false); */
-        axios.get(url).then((response) => {
+        var isLogin = false;
+        navigation.navigate("Login", {isLogin});
+        setSubmitting(false);
+        Alert.alert("", "Create account successfully", 
+                    [{text: "continue"}]);
+        /* axios.get(url).then((response) => {
             const result = response.data;
-            const {registered, reason} = result;
+            const {registrationCompleted, infoReceived, error} = result;
             console.log(result);
-            if (registered === false){
-                handleMessage("Error: " + reason, false);
-            }
-            else{
+            if (infoReceived === true && registrationCompleted === true){
                 Alert.alert("", "Create account successfully", 
                             [{text: "continue"}]);
                 navigation.popToTop();
+            }
+            else{
+                handleMessage("Error: " + error, false);
             }
             setSubmitting(false);
         }).catch((error) => {
@@ -71,7 +76,7 @@ const UsnPwdCreate = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        });
+        }); */
     };
 
     const handleMessage = (mess, type = false) => {
@@ -80,10 +85,30 @@ const UsnPwdCreate = ({navigation, route}) =>{
     };
 
     return (
-        <Scroll_component>
-            <StyledContainer style={{paddingTop: 120}}>
-                <StatusBar style="dark"/>
+        <StyledContainer style={{
+            paddingTop: 10 + StatusBarHeight,
+            }}>
+            <StatusBar style="dark"/>
+            {/* header */}
+            <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    paddingBottom: 20,
+                    backgroundColor: white,
+                    width: "14%",
+            }}>
+                <TouchableOpacity onPress={() => {
+                    navigation.goBack();
+                }}>
+                    <Ionicons name="chevron-back" 
+                        size={30} color={brand}/>
+                </TouchableOpacity>
+            </View>
+            <Scroll_component>
                 <Innercontainer>
+                    <Title style={{paddingBottom: 20}}>
+                        Create account
+                    </Title>
                     <Formik
                     initialValues={{username: '', password: '',
                     confirmpassword: ''}}
@@ -92,6 +117,11 @@ const UsnPwdCreate = ({navigation, route}) =>{
                             values.password=="" || 
                             values.confirmpassword==""){
                             handleMessage("Please fill all the fields.");
+                            setSubmitting(false);
+                        }
+                        else if (values.password.length < 8){
+                            handleMessage("Password need at least 8 "
+                                        + "characters.");
                             setSubmitting(false);
                         }
                         else if (values.password != values.confirmpassword){
@@ -117,6 +147,7 @@ const UsnPwdCreate = ({navigation, route}) =>{
                                 handleMessage("Username must have " 
                                             + "at least " 
                                             + "1 alphabet character.");
+                                setSubmitting(false);
                             }
                             else{
                                 handleUSNPWD_Create(values, setSubmitting);
@@ -187,8 +218,8 @@ const UsnPwdCreate = ({navigation, route}) =>{
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
-            </StyledContainer>
-        </Scroll_component>
+            </Scroll_component>
+        </StyledContainer>
     );
 }
 

@@ -3,20 +3,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
 import {View, TouchableWithoutFeedback, Keyboard, 
-        ActivityIndicator
+        ActivityIndicator, TouchableOpacity,
 } from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
-    Msgline,
-    StyledFormArea, StyledInputLabel, StyledTextInput,
-    LeftIcon,
-    StyledButton, ButtonText,
-    Colors
+        Title,
+        Msgline,
+        StyledFormArea, StyledInputLabel, StyledTextInput,
+        LeftIcon,
+        StyledButton, ButtonText,
+        Colors, StatusBarHeight,
 } from "./../components/style_components";
 
 //icon components:
-import {Octicons} from "@expo/vector-icons";
+import {Octicons, Ionicons} from "@expo/vector-icons";
 
 //API client axios:
 import axios from 'axios';
@@ -25,12 +26,13 @@ import axios from 'axios';
 import { Formik } from 'formik';
 
 //Colors:
-const {darklight, i_extra, white} = Colors;
+const {brand, darklight, i_extra, white} = Colors;
 
 
 //Mail verify implementation:
 const MailVerify = ({navigation, route}) =>{
-    const {goto, email} = route.params
+    const {goto, email} = route.params;
+    const reason = route.params.reason ? route.params.reason : "";
 
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
@@ -41,11 +43,12 @@ const MailVerify = ({navigation, route}) =>{
         const  url = ("https://shopii-spirit.herokuapp.com/verify?"
                     +"email="+email+"&verifycode="+codeveri);
         console.log(url);
-        /* navigation.replace(goto, {email});
-        setSubmitting(false); */
-        axios.get(url).then((response) => {
+        navigation.replace(goto, {email, reason});
+        setSubmitting(false);
+        /* axios.get(url).then((response) => {
             const result = response.data;
             const {verified} = result;
+            console.log(result);
             if (verified !== true){
                 handleMessage("Error: The verify code is " 
                             + "not correct.", false);
@@ -59,7 +62,7 @@ const MailVerify = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        });
+        }); */
     };
 
     const handleMessage = (mess, type = false) => {
@@ -71,9 +74,27 @@ const MailVerify = ({navigation, route}) =>{
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}
         touchSoundDisabled={true} 
         >
-            <StyledContainer style={{paddingTop: 200}}>
+            <StyledContainer style={{
+                paddingTop: 10 + StatusBarHeight,
+                }}>
                 <StatusBar style="dark"/>
+                {/* header */}
+                <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    paddingBottom: 20,
+                    backgroundColor: white,
+                    width: "14%",
+                }}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <Ionicons name="chevron-back" 
+                            size={30} color={brand}/>
+                    </TouchableOpacity>
+                </View>
                 <Innercontainer>
+                    <Title style={{paddingBottom: 20}}>Mail Verify</Title>
                     <Formik
                     initialValues={{code: ''}}
                     onSubmit={(values, {setSubmitting}) => {
