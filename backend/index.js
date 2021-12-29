@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const db = require("./data/database.js");
 const verifyManager = require("./authenticate/verifyManager");
 const sessionManager = require("./authenticate/sessionManager");
+const { response } = require("express");
 
 function parseUserData(username, data)
 {
@@ -154,7 +155,47 @@ app.get("/register", async (req, res) => {
 })
 
 app.get("/product", (req, res) => {
-	res.sendStatus(202);
+	let response = {
+		existed: false,
+		categoryExisted: false,
+		error: null,
+		data: null
+	}
+
+	if (req.query.pid) {
+		let product = db.getProduct(req.query.pid);
+		if (product) {
+			response.existed = true;
+			response.data = product;
+		}
+	}
+	else if (req.query.category) {
+		let page = parseInt(req.query.page);
+		if (!page)
+			page = 0;
+		let products = db.getProductByCategory(req.query.category, page);
+		if (products) {
+			response.existed = true;
+			response.categoryExisted = true;
+			response.data = products;
+		}
+	}
+	else if (req.query.searchquery) {
+		let products = db.getProductByQuery(req.query.searchquery);
+		if (products) {
+			response.existed = true;
+			response.data = products;
+		}
+	}
+
+	res.json(response);
+})
+
+app.get("/category", (req, res) => {
+	let categories = [];
+	for (let category of db.getProductCategory())
+		categories.push(category)
+	res.json(categories);
 })
 
 function sessionHandle(req, res, next)

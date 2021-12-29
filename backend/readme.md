@@ -63,3 +63,19 @@ Respond: a json that contains:
 - sessionExpired: true if the session is still active
 - error: null if there aren't any error
 - accountDeleted: true if user info and account is deleted
+
+
+## Get product categories
+/category
+Respond: list of categories
+
+## Get product
+/product?pid={product id}
+/product?category={category name}&page={page number}
+/product?searchquery{query string}
+
+Respond: a json that contains:
+- existed: true if there are at least 1 product
+- categoryExisted: true if the category exists
+- error: null if there aren't any error
+- data: product(s) data
