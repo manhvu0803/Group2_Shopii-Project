@@ -1,5 +1,5 @@
 //import basic needed module of react native:
-import React from "react";
+import React, {useContext} from "react";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { createBottomTabNavigator, 
         BottomTabBar,     
@@ -17,14 +17,19 @@ import { Ionicons } from "@expo/vector-icons";
 import {Colors} from "./../components/style_components";
 
 
+import { CredentialsContext } from './../components/context_component';
+
+
 const {brand, darklight} = Colors;
 
 const bottomTab = createBottomTabNavigator();
 
-const Tabs = ({navigation, route}) => {
-    var isLogin = route.params ? route.params.isLogin : false;
+const Tabs = ({navigation}) => {
+    var isLogin = false;
     isLogin = true;
-    console.log("Tabs:", isLogin)
+    const {storedCredentials, setStoredCredentials} = useContext(
+                                                        CredentialsContext);
+
     return (
         <bottomTab.Navigator
             screenOptions={{
@@ -75,7 +80,7 @@ const Tabs = ({navigation, route}) => {
                 listeners={{
                     navigation: navigation,
                     tabPress: (e) => {
-                        if (isLogin===false){
+                        if (storedCredentials === null){
                             e.preventDefault();
                             navigation.navigate("Login", {isLogin});
                         }

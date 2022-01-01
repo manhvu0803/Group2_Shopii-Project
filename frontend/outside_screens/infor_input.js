@@ -60,7 +60,7 @@ const InforInput = ({navigation, route}) =>{
         handleMessage(null);
         const {fullname, dob, phonenb, gender, address}
              = credentials;
-        const dobsent = toDateEpoch(date);
+        const dobsent = toDateSentFormat(date);
         navigation.navigate("UsnPwdCreate", 
                             {email, fullname, dobsent, phonenb, 
                             gender, address});
@@ -91,6 +91,24 @@ const InforInput = ({navigation, route}) =>{
         timestamp += ("/" + temp[3]);
 
         return timestamp;
+    }
+    
+    const toDateSentFormat = (aDate) => {
+        const dateString = date.toLocaleDateString();
+        const temp = dateString.split("/");
+        let year = temp[2];
+        for (let i = temp[2].length; i < 4; i++){
+            year = "0" + year;
+        }
+        let month = temp[1];
+        for (let i = temp[1].length; i < 2; i++){
+            month = "0" + month;
+        }
+        let day = temp[0];
+        for (let i = temp[0].length; i < 2; i++){
+            day = "0" + day;
+        }
+        return year + "-" + month + "-" + day;
     }
 
     const toDateEpoch = (aDate) => {
@@ -136,32 +154,38 @@ const InforInput = ({navigation, route}) =>{
                     initialValues={{fullname: '', dob: '',
                     phonenb: '', gender: '', address: ''}}
                     onSubmit={(values, {setSubmitting}) => {
-                        if (values.fullname=="" || 
-                            values.dob=="" || 
-                            values.phonenb=="" || 
-                            values.gender=="" || 
-                            values.address==""){
+                        if (values.fullname.trim().length==0 || 
+                            values.phonenb.trim().length==0 || 
+                            values.address.trim().length==0){
                             handleMessage("Please fill all the fields.");
                             setSubmitting(false);
                         }
                         else{
                             var valid_phn = true;
+                            const rgxNumber = new RegExp(/[0-9]/, 'g');
+                            const phone = values.phonenb;
                             const length = values.phonenb.length;
+                            if(!rgxNumber.test(phone)) {
+                                handleMessage("Phone number can only " 
+                                            + "contain number");
+                                setSubmitting(false);
+                            }
+                            /* const length = values.phonenb.length;
                             for (var i = 0; i < length; i++){
                                 if (values.phonenb.charAt(i) < '0' || 
                                     values.phonenb.charAt(i) > '9'){
                                         valid_phn = false;
                                         break;
                                     }
-                            }
-                            if (valid_phn === true){
+                            } */
+                            else{
                                 handleInforInput(values, setSubmitting);
-                            }
+                            }/* 
                             else{
                                 handleMessage("Phone number can only " 
                                             + "contain number");
                                 setSubmitting(false);
-                            }
+                            } */
                         }
                     }}>
                         {({handleChange, handleBlur,

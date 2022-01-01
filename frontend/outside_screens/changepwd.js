@@ -118,6 +118,11 @@ const ChangePwd = ({navigation, route}) =>{
                                         + "Password.");
                             setSubmitting(false);
                         }
+                        else if (values.newpassword.length < 8){
+                            handleMessage("Password need at least 8 "
+                                        + "characters.");
+                            setSubmitting(false);
+                        }
                         else{
                             handleChangePWD(values, setSubmitting);
                         }

@@ -1,8 +1,10 @@
 //import part:
 //base components of react-native
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from "react";
-import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
+import React, { useState, useContext } from "react";
+import {View, TouchableOpacity, Text, ActivityIndicator, 
+        Alert,
+}from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
@@ -31,6 +33,10 @@ import axios from 'axios';
 //formik:
 import { Formik } from 'formik';
 
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import { CredentialsContext } from './../components/context_component';
+
 //Colors:
 const {brand, darklight, white, i_extra} = Colors;
 
@@ -43,22 +49,41 @@ const UserAccount = ({navigation, route}) =>{
     
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
+    
+    const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
 
-    const handleInforInput = (credentials, setSubmitting) => {
+    const preCredentials = {...storedCredentials} || {};
+
+    const handleChangeUsrename = (credentials, setSubmitting) => {
         handleMessage(null);
-        const {fullname, dob, phonenb, gender, address}
-             = credentials;
-        const dobsent = toDateEpoch(date);
-        navigation.navigate("UsnPwdCreate", 
-                            {email, fullname, dobsent, phonenb, 
-                            gender, address});
+        Alert.alert("", "Change username successfully", [{text: "OK"}]);
+        preCredentials.data.username = credentials.username;
+        setStoredCredentials(preCredentials);
+        if (true){
+
+        }
+        else{
+            
+        }
         setSubmitting(false);
+        setEditing(false);
     };
 
     const handleMessage = (mess, type = false) => {
         setMessage(mess);
         setMessageType(type);
     };
+
+    const updateUsername = (credentials) => {
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(credentials))
+        .then(() => {
+            setStoredCredentials(credentials);
+        })
+        .catch((error) => {
+            console.log(error);
+            handleMessage("Updating username failed.")
+        })
+    }
 
     return (
         <Scroll_component>
@@ -86,33 +111,39 @@ const UserAccount = ({navigation, route}) =>{
                         Your Account
                     </Title>
                     <Formik
-                    initialValues={{fullname: '', dob: '',
-                    phonenb: '', gender: '', address: ''}}
+                    initialValues={{username: preCredentials.data.username}}
                     onSubmit={(values, {setSubmitting}) => {
-                        if (values.fullname=="" || 
-                            values.dob=="" || 
-                            values.phonenb=="" || 
-                            values.gender=="" || 
-                            values.address==""){
-                            handleMessage("Please fill all the fields.");
+                        if (values?.username.length == 0){
+                            handleMessage("Please input a new username fields.");
                             setSubmitting(false);
                         }
                         else{
-                            var valid_phn = true;
-                            const length = values.phonenb.length;
-                            for (var i = 0; i < length; i++){
-                                if (values.phonenb.charAt(i) < '0' || 
-                                    values.phonenb.charAt(i) > '9'){
-                                        valid_phn = false;
-                                        break;
-                                    }
-                            }
-                            if (valid_phn === true){
-                                handleInforInput(values, setSubmitting);
+                            if (values?.username !== preCredentials?.data?.username){
+                                var count_alphabet = 0;
+                                var valid = true;
+                                const length = values?.username.length;
+                                const username = values.username || '';
+
+                                const rgxSymbol = new RegExp(/@/, 'g');
+                                const rgxLowerCase = new RegExp(/[a-z]/, 'g');
+                                const rgxUpperCase = new RegExp(/[A-Z]/, 'g');
+
+                                if(rgxSymbol.test(username) || (!rgxUpperCase.test(username) && !rgxLowerCase.test(username))) {
+                                    handleMessage(
+                                        "Username must have " 
+                                    + "at least " 
+                                    + "1 alphabet character "
+                                    + "and cannot contain '@'.");
+                                    setSubmitting(false);
+                                }
+                                else{
+                                    handleChangeUsrename(values, 
+                                                        setSubmitting,
+                                                        setEditing);
+                                }
                             }
                             else{
-                                handleMessage("Phone number can only " 
-                                            + "contain number");
+                                handleMessage("There is no change to save.");
                                 setSubmitting(false);
                             }
                         }
@@ -120,16 +151,15 @@ const UserAccount = ({navigation, route}) =>{
                         {({handleChange, handleBlur,
                         handleSubmit, values, isSubmitting}) =>
                         (<StyledFormArea>
-                            <MyTextInput
+                            <MyTextView
                             label="Your mail"
                             icon="mail"
                             placeholder="abc123@gmail.com"
                             placeholderTextColor='black'
                             onChangeText={handleChange('email')}
                             onBlur={handleBlur('email')}
-                            value={values.email}
+                            value={preCredentials.data.email}
                             keyboardType="email-address"
-                            editable={false}
                             />
                             
                             {editing==false ?
@@ -140,7 +170,7 @@ const UserAccount = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('username')}
                             onBlur={handleBlur('username')}
-                            value={values.username}
+                            value={preCredentials.data.username}
                             isUsername={true}
                             />
                             :
@@ -173,7 +203,11 @@ const UserAccount = ({navigation, route}) =>{
                                 </StyledButton>
                         
                                 <StyledButton cancle={true}
-                                onPress={() => {setEditing(false)}}>
+                                onPress={() => {
+                                    setEditing(false);
+                                    handleMessage(null);
+                                    values.username = preCredentials.data.username;
+                                    }}>
                                     <ButtonText>Cancle</ButtonText>
                                 </StyledButton>
                             </SocialButtonPart>)}
@@ -185,6 +219,9 @@ const UserAccount = ({navigation, route}) =>{
                                 color={white}/>
                             </StyledButton>
                             )}
+                            <Msgline type={messageType}>
+                                {message}
+                            </Msgline>
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
@@ -193,7 +230,7 @@ const UserAccount = ({navigation, route}) =>{
     );
 }
 
-const MyTextInput = ({label, icon, isUsername, editing,
+const MyTextInput = ({label, icon, isUsername,
     ...props}) => {
     
     return (
@@ -222,7 +259,7 @@ const MyTextView = ({label, icon, isUsername, ...props}) => {
                 <Octicons name={icon} size={30} color={i_extra}/>
             </LeftIcon>}
             <StyledInputLabel>{label}</StyledInputLabel>
-            <StyledTextInput 
+            <StyledTextInput  editable={false}
                 style={{backgroundColor: white}}
                 {...props}/>
         </View>
@@ -234,8 +271,9 @@ const PasswordPart = ({navigation}) => {
         <TouchableOpacity 
             style={{paddingTop: 15, paddingBottom: 15}}
             onPress={() => {
-                    const goto = "ChangePwd"
-                    navigation.navigate("MailVerify");
+                    const goto = "ChangePwd";
+                    const reason="changepassword";
+                    navigation.navigate("MailVerify", {goto, reason});
                 }}>
             <View 
             style={{

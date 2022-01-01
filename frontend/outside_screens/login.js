@@ -1,7 +1,7 @@
 //import part:
 //base components of react-native:
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {View, Text, ActivityIndicator} from "react-native";
 
 //style components:
@@ -27,19 +27,26 @@ import axios from 'axios';
 import { Formik } from 'formik';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import { CredentialsContext } from './../components/context_component';
+
 //Colors:
 const {brand, darklight, white, i_extra} = Colors;
 
 
 //Login implementation:
-const Login = ({navigation, route}) =>{
+const Login = ({navigation}) =>{
     var goto="";
-    var {isLogin} = route.params;
-    console.log("Login:", isLogin)
+    var isLogin = true;
     
     const [hidePwd, setHiddenpwd] = useState(true);
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
+
+    const {storedCredentials, setStoredCredentials} = useContext(
+                                                        CredentialsContext);
 
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
@@ -57,15 +64,14 @@ const Login = ({navigation, route}) =>{
         axios.get(url).then((response) => {
             const result = response.data;
             const {registered, password, data, error} = result;
-            console.log(result);
             if (registered !== true || password !== true){
                 handleMessage("Error: Invalid username or password.", 
                 false);
             }
             else{
-                console.log("Welcome to our shopping app");
                 isLogin = true;
-                navigation.navigate("Inside Stack", {isLogin})
+                navigation.navigate("Inside Stack");
+                Persistlognin({data});
             }
             setSubmitting(false);
         }).catch((error) => {
@@ -73,8 +79,6 @@ const Login = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-            isLogin=true;
-            navigation.navigate("Inside Stack", {isLogin});
         });
     };
 
@@ -82,6 +86,17 @@ const Login = ({navigation, route}) =>{
         setMessage(mess);
         setMessageType(type);
     };
+
+    const Persistlognin = (credentials) => {
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(credentials))
+        .then(() => {
+            setStoredCredentials(credentials);
+        })
+        .catch((error) => {
+            console.log(error);
+            handleMessage("Persisting lognin failed.")
+        })
+    }
 
     return (
         <Scroll_component>
@@ -97,7 +112,7 @@ const Login = ({navigation, route}) =>{
                     width: "14%",
                 }}>
                     <TouchableOpacity onPress={() => {
-                        navigation.navigate("Inside Stack", {isLogin});
+                        navigation.navigate("Inside Stack");
                     }}>
                         <Ionicons name="chevron-down" 
                             size={30} color={brand}/>

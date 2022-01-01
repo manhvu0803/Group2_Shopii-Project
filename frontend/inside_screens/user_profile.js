@@ -1,8 +1,11 @@
 //import part:
 //base components of react-native
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from "react";
-import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
+import React, { useState, useContext } from "react";
+import {View, TouchableOpacity, 
+        Text, ActivityIndicator, 
+        Alert, 
+}from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
@@ -31,18 +34,27 @@ import axios from 'axios';
 //formik:
 import { Formik } from 'formik';
 
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import { CredentialsContext } from './../components/context_component';
+
 //Colors:
 const {brand, darklight, white, i_extra} = Colors;
 
 
 //Information input implementation:
 const UserProfile = ({navigation, route}) =>{
-    //const {email, data} = route.params;
+    const {storedCredentials, setStoredCredentials} = useContext(
+                                                        CredentialsContext);
+                                
+    const preCredentials = {...storedCredentials} || {};
 
     const [show, setShow] = useState(false);
-    const [date, setDate] = useState(new Date(2000, 0 ,1));
-    const [genderval, setGenderval] = useState("male");
+    const [date, setDate] = useState(new Date(preCredentials.data.dob));
+    const [genderval, setGenderval] = useState(preCredentials.data.sex);
     const [editing, setEditing] = useState(false);
+    
+
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -57,15 +69,19 @@ const UserProfile = ({navigation, route}) =>{
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
-    const handleInforInput = (credentials, setSubmitting) => {
+    const handleInforEdit = (credentials, setSubmitting) => {
         handleMessage(null);
         const {fullname, dob, phonenb, gender, address}
              = credentials;
-        const dobsent = toDateEpoch(date);
-        navigation.navigate("UsnPwdCreate", 
-                            {email, fullname, dobsent, phonenb, 
-                            gender, address});
+        preCredentials.data.email = fullname;
+        preCredentials.data.dob = toDateSentFormat(date);
+        preCredentials.data.phone = phonenb;
+        preCredentials.data.sex = gender;
+        preCredentials.data.address = address;
+        setStoredCredentials(preCredentials);
+        Alert.alert("", "Change username successfully", [{text: "OK"}]);
         setSubmitting(false);
+        setEditing(false);
     };
 
     const handleMessage = (mess, type = false) => {
@@ -94,8 +110,26 @@ const UserProfile = ({navigation, route}) =>{
         return timestamp;
     }
 
+    const toDateSentFormat = (aDate) => {
+        const dateString = date.toLocaleDateString();
+        const temp = dateString.split("/");
+        let year = temp[2];
+        for (let i = temp[2].length; i < 4; i++){
+            year = "0" + year;
+        }
+        let month = temp[1];
+        for (let i = temp[1].length; i < 2; i++){
+            month = "0" + month;
+        }
+        let day = temp[0];
+        for (let i = temp[0].length; i < 2; i++){
+            day = "0" + day;
+        }
+        return year + "-" + month + "-" + day;
+    }
+
     const toDateEpoch = (aDate) => {
-        return aDate.getTime().toString();
+        return aDate.getTime();
     }
 
     return (
@@ -134,34 +168,39 @@ const UserProfile = ({navigation, route}) =>{
                         Your Profile
                     </Title>
                     <Formik
-                    initialValues={{fullname: '', dob: '',
-                    phonenb: '', gender: '', address: ''}}
+                    initialValues={{fullname: preCredentials.data.email, 
+                    dob: '',
+                    phonenb: preCredentials.data.phone, 
+                    gender: '', 
+                    address: preCredentials.data.address}}
                     onSubmit={(values, {setSubmitting}) => {
-                        if (values.fullname=="" || 
-                            values.dob=="" || 
-                            values.phonenb=="" || 
-                            values.gender=="" || 
-                            values.address==""){
+                        if (values.fullname.trim().length==0 || 
+                            values.phonenb.trim().length==0 || 
+                            values.address.trim().length==0){
                             handleMessage("Please fill all the fields.");
                             setSubmitting(false);
                         }
                         else{
-                            var valid_phn = true;
-                            const length = values.phonenb.length;
-                            for (var i = 0; i < length; i++){
-                                if (values.phonenb.charAt(i) < '0' || 
-                                    values.phonenb.charAt(i) > '9'){
-                                        valid_phn = false;
-                                        break;
-                                    }
-                            }
-                            if (valid_phn === true){
-                                handleInforInput(values, setSubmitting);
+                            if (values.fullname===preCredentials.data.email
+                            && date.toLocaleDateString() === new Date(preCredentials.data.dob).toLocaleDateString() 
+                            && values.phonenb===preCredentials.data.phone
+                            && genderval === preCredentials.data.sex   
+                            && values.address===preCredentials.data.address){
+                                handleMessage("There is no change to save.");
+                                setSubmitting(false);
                             }
                             else{
-                                handleMessage("Phone number can only " 
-                                            + "contain number");
-                                setSubmitting(false);
+                                let temp = "abc";
+                                const rgxNumber = new RegExp(/[0-9]/, 'g');
+                                const phone = values.phonenb.replaceAll(" ", "");
+                                if(!rgxNumber.test(phone)) {
+                                    handleMessage("Phone number can only " 
+                                                + "contain number");
+                                    setSubmitting(false);
+                                }
+                                else{
+                                    handleInforEdit(values, setSubmitting);
+                                }
                             }
                         }
                     }}>
@@ -176,7 +215,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('fullname')}
                             onBlur={handleBlur('fullname')}
-                            values={values.fullname}
+                            value={preCredentials.data.email}
                             isFullname = {true}
                             />
                             :
@@ -187,7 +226,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor={darklight}
                             onChangeText={handleChange('fullname')}
                             onBlur={handleBlur('fullname')}
-                            values={values.fullname}
+                            value={values.fullname}
                             isFullname = {true}
                             />
                             }
@@ -196,11 +235,11 @@ const UserProfile = ({navigation, route}) =>{
                             <MyTextView
                             label="Date of birth"
                             icon="calendar"
-                            placeholder="Sat Jan 01 2000"
+                            placeholder="01/01/2000"
                             placeholderTextColor='black'
                             onChangeText={handleChange('dob')}
                             onBlur={handleBlur('dob')}
-                            value={values.dob = toTimeStamp(date)}
+                            value={toTimeStamp(new Date(preCredentials.data.dob))}
                             isDate={true}
                             editable={false}
                             showDatePicker={showDatePicker}
@@ -209,7 +248,7 @@ const UserProfile = ({navigation, route}) =>{
                             <MyTextInput
                             label="Date of birth"
                             icon="calendar"
-                            placeholder="Sat Jan 01 2000"
+                            placeholder="01/01/2000"
                             placeholderTextColor='black'
                             onChangeText={handleChange('dob')}
                             onBlur={handleBlur('dob')}
@@ -228,7 +267,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('phonenb')}
                             onBlur={handleBlur('phonenb')}
-                            value={values.phonenb}
+                            value={preCredentials.data.phone}
                             isPhone={true}
                             />
                             :
@@ -252,7 +291,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('gender')}
                             onBlur={handleBlur('gender')}
-                            value={values.gender=genderval}
+                            value={preCredentials.data.sex}
                             setGender={setGenderval}
                             isGender = {true}
                             />
@@ -279,7 +318,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('address')}
                             onBlur={handleBlur('address')}
-                            value={values.address}
+                            value={preCredentials.data.address}
                             isAddress = {true}
                             />
                             :
@@ -314,7 +353,15 @@ const UserProfile = ({navigation, route}) =>{
                                 </StyledButton>
                         
                                 <StyledButton cancle={true}
-                                onPress={() => {setEditing(false)}}>
+                                onPress={() => {
+                                    setEditing(false);
+                                    handleMessage(null);
+                                    values.fullname = preCredentials.data.email;
+                                    setDate(new Date(preCredentials.data.dob));
+                                    values.phonenb = preCredentials.data.phone;
+                                    setGenderval(preCredentials.data.sex); 
+                                    values.address = preCredentials.data.address;
+                                }}>
                                     <ButtonText>Cancle</ButtonText>
                                 </StyledButton>
                             </SocialButtonPart>)}
@@ -382,14 +429,14 @@ const MyTextInput = ({label, icon, isFullname, isPhone,
 }
 
 const MyTextView = ({label, icon, isFullname, isPhone,
-    isDate, showDatePicker, isGender, isAddress, setGender, editing,
+    isDate, showDatePicker, isGender, isAddress, setGender,
     ...props}) => {
     return (
         <View>
             <StyledInputLabel>{label}</StyledInputLabel>
 
             {(!isDate) && 
-                <StyledTextInput editable={editing}
+                <StyledTextInput editable={false}
                     style={{backgroundColor: white}}
                     {...props}
                 />}

@@ -113,9 +113,9 @@ const UsnPwdCreate = ({navigation, route}) =>{
                     initialValues={{username: '', password: '',
                     confirmpassword: ''}}
                     onSubmit={(values, {setSubmitting}) => {
-                        if (values.username=="" || 
-                            values.password=="" || 
-                            values.confirmpassword==""){
+                        if (values.username.length==0 || 
+                            values.password.length==0 || 
+                            values.confirmpassword.length==0){
                             handleMessage("Please fill all the fields.");
                             setSubmitting(false);
                         }
@@ -131,8 +131,23 @@ const UsnPwdCreate = ({navigation, route}) =>{
                         }
                         else{
                             var count_alphabet = 0;
+                            var valid = true;
                             const length = values.username.length;
-                            for (var i = 0; i < length; i++){
+                            const username = values.username || '';
+
+                            const rgxSymbol = new RegExp(/@/, 'g');
+                            const rgxLowerCase = new RegExp(/[a-z]/, 'g');
+                            const rgxUpperCase = new RegExp(/[A-Z]/, 'g');
+
+                            if(rgxSymbol.test(username) || (!rgxUpperCase.test(username) && !rgxLowerCase.test(username))) {
+                                handleMessage(
+                                    "Username must have " 
+                                    + "at least " 
+                                    + "1 alphabet character "
+                                    + "and cannot contain '@'.");
+                                setSubmitting(false);
+                            }
+                            /* for (var i = 0; i < length; i++){
                                 if (
                                     values.username.charAt(i) >= 'A' &&
                                     values.username.charAt(i) <= 'Z'
@@ -142,13 +157,21 @@ const UsnPwdCreate = ({navigation, route}) =>{
                                 ){
                                     count_alphabet++;
                                 }
+                                else if (values.username.charAt(i) == "@"){
+                                    valid = false;
+                                    break;
+                                }
                             }
                             if (count_alphabet == 0){
+                                valid = false;
+                            }
+                            if (valid == false){
                                 handleMessage("Username must have " 
                                             + "at least " 
-                                            + "1 alphabet character.");
+                                            + "1 alphabet character "
+                                            + "and cannot contain '@'.");
                                 setSubmitting(false);
-                            }
+                            } */
                             else{
                                 handleUSNPWD_Create(values, setSubmitting);
                             }

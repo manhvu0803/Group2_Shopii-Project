@@ -1,8 +1,8 @@
 //import part:
 //base components of react-native:
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from "react";
-import {View, Text, 
+import React, { useState, useContext } from "react";
+import {View, Text, Image,
         ActivityIndicator, TouchableOpacity
 } from "react-native";
 
@@ -30,25 +30,41 @@ import {HomeHeader, SearchHeader} from '../components/header_components';
 //formik:
 import { Formik } from 'formik';
 
+
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import { CredentialsContext } from './../components/context_component';
+
 //Colors:
 const {brand, darklight, white, i_extra} = Colors;
 
 const render_header = ({navigation}) => {
+    const {storedCredentials, setStoredCredentials} = useContext(
+                                                        CredentialsContext);
+    const logout = () => {
+        AsyncStorage.removeItem('ShopiiCridentials')
+        .then(() => {
+            setStoredCredentials(null);
+        })
+        .catch(error => console.log(error));
+    }
+
     return(
         <View style={{
                 backgroundColor: brand,
-                paddingTop: StatusBarHeight + 6,
+                paddingTop: StatusBarHeight,
                 paddingLeft: 10,
                 paddingRight: 0,
         }}>
             <StyledFormArea style={{
                 width: '90%'}}>
                 <StyledButton google={true} style={{
-                    width: '25%', height: 35,
+                    width: '25%', height: 30,
                     left: window_width*73/100,
-                    marginBottom: 10,
+                    padding: 7,
                     backgroundColor: "white"}}
                     onPress = {() => {
+                        logout();
                         navigation.navigate("Home");
                     }}
                 >
@@ -56,11 +72,48 @@ const render_header = ({navigation}) => {
                         style={{
                             color: brand,
                             paddingRight: 0,
-                            fontSize: 14       
+                            fontSize: 12,   
                         }}>
                         Logout
                     </ButtonText>
                 </StyledButton>
+                {storedCredentials != null && (
+                    <View style={{
+                        flexDirection:'row', 
+                        paddingBottom: 12,
+                        }}
+                    >
+                        <Image style={{
+                            borderRadius: 50,
+                            borderWidth: 2,
+                            width: '20%',
+                            height: 70
+                        }}
+                            source={{uri: storedCredentials.data.profilePic}}
+                        />
+                        <View style={{
+                            marginLeft: 10,
+                            justifyContent: 'center',
+                            }}
+                        >
+                            <Text style={{
+                                fontSize: 20,
+                                fontWeight: 'bold',
+                                color: white,
+                            }}>
+                                {storedCredentials.data.email}
+                            </Text>
+                            <Text style={{
+                                fontSize: 15,
+                                fontWeight: 'bold',
+                                color: white,
+                            }}>
+                                {storedCredentials.data.username}
+                            </Text>
+                        </View>
+                    </View>
+                )}
+                
             </StyledFormArea>
         </View>
     )
@@ -79,25 +132,25 @@ const MeScreen = ({navigation, route}) => {
                 
                 {render_header({navigation})}
                 <Scroll_component>
-                <NavigatePart navigation={navigation}
-                                type="profile"
-                                text="My Profile"/>
-                
-                <NavigatePart navigation={navigation}
-                                type="account"
-                                text="My Account"/>
-                
-                <NavigatePart navigation={navigation}
-                                type="shop"
-                                text="My Shop"/>
-                
-                <NavigatePart navigation={navigation}
-                                type="shopping cart"
-                                text="My Shopping cart"/>
-                
-                <NavigatePart navigation={navigation}
-                                type="order"
-                                text="My Order"/>
+                    <NavigatePart navigation={navigation}
+                                    type="profile"
+                                    text="My Profile"/>
+                    
+                    <NavigatePart navigation={navigation}
+                                    type="account"
+                                    text="My Account"/>
+                    
+                    <NavigatePart navigation={navigation}
+                                    type="shop"
+                                    text="My Shop"/>
+                    
+                    <NavigatePart navigation={navigation}
+                                    type="shopping cart"
+                                    text="My Shopping cart"/>
+                    
+                    <NavigatePart navigation={navigation}
+                                    type="order"
+                                    text="My Order"/>
                 </Scroll_component>
             </Innercontainer>
         </StyledContainer>
@@ -109,6 +162,7 @@ const NavigatePart = ({navigation, text, type}) => {
         <TouchableOpacity 
             style={{marginTop: 15, marginBottom: 10}}
             onPress={() => {
+                navigation.navigate(text)
                 }}>
             <View 
             style={{

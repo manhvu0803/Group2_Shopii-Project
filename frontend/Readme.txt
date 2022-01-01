@@ -1,6 +1,6 @@
 This folder contains all the outside screens, which includes:
-_login screen (done UI, done with login process, try to make the sign in with Google and Facebook work)
-_sign-up screen (done UI, wait to text the sign-up process)
+_login screen (done)
+_sign-up screen (done)
 _get back password screen (done UI, wait to text the change password process)
 All the screens is impletemented with expo react native.
 
@@ -17,6 +17,8 @@ _navigation pakages (installby using these commands:
 			+npm install @react-navigation/native-stack
 )
 _axios (install by using command expo install axios)
+_async-storage (install by using command npm install @react-native-async-storage/async-storage)
+_app-loading (expo install expo-app-loading)
 
 
 To run the project correctly with expo (until now):

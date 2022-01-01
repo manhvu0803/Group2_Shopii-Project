@@ -7,14 +7,15 @@ import { createStackNavigator,
 //import screens:
 import Tabs from "./inside_tabs";
 import SearchResultScreen from "../inside_screens/search_result_screen";
+import ProductScreen from "../inside_screens/product_screen";
 import UserProfile from "../inside_screens/user_profile";
+import UserAccount from "../inside_screens/user_account";
+import Shoppingcart from "../inside_screens/shoppingcart";
 
 
 const Stack = createStackNavigator();
 
 const InsideStack = ({route}) => {
-    var isLogin = route.params ? route.params.isLogin : false;
-    console.log("Inside Stack:", isLogin)
     return (
         <Stack.Navigator
             screenOptions={{
@@ -24,7 +25,10 @@ const InsideStack = ({route}) => {
             initialRouteName="Tabs"
         >
             <Stack.Screen
-                name="Tabs" component={Tabs} initialParams={{isLogin}}
+                name="Tabs" component={Tabs}
+                options={{
+                    ...TransitionPresets.ScaleFromCenterAndroid,
+                }}
             />
 
             <Stack.Screen
@@ -32,15 +36,19 @@ const InsideStack = ({route}) => {
             />
 
             <Stack.Screen
-                name="My profile" component={UserProfile}
+                name="Product detail" component={ProductScreen}
             />
 
             <Stack.Screen
-                name="My account" component={SearchResultScreen}
+                name="My Profile" component={UserProfile}
             />
 
             <Stack.Screen
-                name="My shop" component={SearchResultScreen}
+                name="My Account" component={UserAccount}
+            />
+
+            <Stack.Screen
+                name="My Shopping cart" component={Shoppingcart}
             />
         </Stack.Navigator>
     )
