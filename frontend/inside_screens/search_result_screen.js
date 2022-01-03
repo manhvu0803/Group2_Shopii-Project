@@ -8,29 +8,16 @@ import {View, Text, FlatList, Image,
 } from "react-native";
 
 //style components:
-import{ StyledContainer, Innercontainer,
-        Logo, StyledSearchInput, 
-        StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon, RightIcon, StyledButton, ButtonText,
-        Msgline, Emptyline,
-        ExtraView, ExtraText, ExtraLink, ExtraTextLink,
-        SocialButtonPart, Colors, StatusBarHeight
+import{ StyledContainer, StyledSearchInput, StyledFormArea,  
+        RightIcon, Colors, StatusBarHeight
 } from "./../components/style_components";
 
 //icon components:
-import {Octicons, Ionicons, AntDesign, 
-        Fontisto, MaterialCommunityIcons
+import {Ionicons, AntDesign, 
 } from "@expo/vector-icons";
-
-//scroll component:
-import Scroll_component from './../components/scroll_component';
 
 //API client axios:
 import axios from 'axios';
-
-//header component:
-import {HomeHeader, SearchHeader} from '../components/header_components';
-
 
 import { CredentialsContext } from './../components/context_component';
 
@@ -38,7 +25,7 @@ import { CredentialsContext } from './../components/context_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {brand, darklight, white, i_extra} = Colors;
+const {brand, darklight, white} = Colors;
 
 const render_header = ({handleBlur, handleChange, 
                         handleSubmit, storedCredentials, 
@@ -95,19 +82,11 @@ const SearchResultScreen = ({navigation, route}) => {
     const {storedCredentials, setStoredCredentials} = useContext(
                                                         CredentialsContext);
 
-    let Products=[{img:"", name:"A", price:0, rating: 3},
-                  {img:"", name:"B", price:0, rating: 4},
-                  {img:"", name:"C", price:0, rating: 5},
-                  {img:"", name:"D", price:0, rating: 4}];
+    const [ProductLst, setProductLst] = useState(null);
 
     const getProductLst = () => {
         let  url = ("https://shopii-spirit.herokuapp.com/product?");
-        if (searchby == "category"){
-            url = url + "category=" + search;
-        }
-        else{
-            url = url + "category=decorative";
-        }
+        url = url + searchby + "=" + search;
         console.log(url);
         axios.get(url).then((response) => {
             const result = response.data;
@@ -116,8 +95,6 @@ const SearchResultScreen = ({navigation, route}) => {
             console.log(error.JSON);
         });
     }
-
-    const [ProductLst, setProductLst] = useState(null);
 
     if (ProductLst == null){
         getProductLst();

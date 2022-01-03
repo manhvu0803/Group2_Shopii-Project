@@ -63,14 +63,17 @@ const Login = ({navigation}) =>{
                     + loginby + "=" + email + "&password="+password);
         axios.get(url).then((response) => {
             const result = response.data;
-            const {registered, password, data, error} = result;
+            const {registered, password, data, error, sessionId} = result;
             if (registered !== true || password !== true){
                 handleMessage("Error: Invalid username or password.", 
                 false);
             }
             else{
                 isLogin = true;
-                navigation.navigate("Inside Stack");
+                data["fullname"] = data.email;
+                data["sessionId"] = sessionId;
+                data["shopping cart"] = [];
+                data["ordered list"] = [];
                 Persistlognin({data});
             }
             setSubmitting(false);
@@ -91,6 +94,7 @@ const Login = ({navigation}) =>{
         AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(credentials))
         .then(() => {
             setStoredCredentials(credentials);
+            navigation.navigate("Inside Stack");
         })
         .catch((error) => {
             console.log(error);

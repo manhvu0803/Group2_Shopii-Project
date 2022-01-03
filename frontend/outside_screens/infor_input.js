@@ -60,7 +60,7 @@ const InforInput = ({navigation, route}) =>{
         handleMessage(null);
         const {fullname, dob, phonenb, gender, address}
              = credentials;
-        const dobsent = toDateSentFormat(date);
+        const dobsent = toDateEpoch(date);
         navigation.navigate("UsnPwdCreate", 
                             {email, fullname, dobsent, phonenb, 
                             gender, address});

@@ -53,19 +53,18 @@ const UsnPwdCreate = ({navigation, route}) =>{
                     + "&phone=" + phonenb +"&sex=" + gender 
                     + "&address=" + address);
         console.log(url);
-        var isLogin = false;
-        navigation.navigate("Login", {isLogin});
+        /* navigation.navigate("Login");
         setSubmitting(false);
         Alert.alert("", "Create account successfully", 
-                    [{text: "continue"}]);
-        /* axios.get(url).then((response) => {
+                    [{text: "continue"}]); */
+        axios.get(url).then((response) => {
             const result = response.data;
             const {registrationCompleted, infoReceived, error} = result;
             console.log(result);
             if (infoReceived === true && registrationCompleted === true){
                 Alert.alert("", "Create account successfully", 
                             [{text: "continue"}]);
-                navigation.popToTop();
+                navigation.navigate("Login");
             }
             else{
                 handleMessage("Error: " + error, false);
@@ -76,7 +75,7 @@ const UsnPwdCreate = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

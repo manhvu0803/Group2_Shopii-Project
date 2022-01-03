@@ -43,9 +43,9 @@ const MailVerify = ({navigation, route}) =>{
         const  url = ("https://shopii-spirit.herokuapp.com/verify?"
                     +"email="+email+"&verifycode="+codeveri);
         console.log(url);
-        navigation.replace(goto, {email, reason});
-        setSubmitting(false);
-        /* axios.get(url).then((response) => {
+        /* navigation.replace(goto, {email, reason});
+        setSubmitting(false); */
+        axios.get(url).then((response) => {
             const result = response.data;
             const {verified} = result;
             console.log(result);
@@ -62,7 +62,7 @@ const MailVerify = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

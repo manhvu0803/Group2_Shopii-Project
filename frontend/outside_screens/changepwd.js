@@ -44,25 +44,30 @@ const ChangePwd = ({navigation, route}) =>{
         const  url = ("https://shopii-spirit.herokuapp.com/"+reason+"?" 
                     + "email=" + email + "&password=" + newpassword);
         console.log(url);
-        var isLogin = false;
-        if (reason === "forgotpassword"){
-            navigation.navigate("Login", {isLogin});
+        /* if (reason === "forgotpassword"){
+            navigation.navigate("Login");
         }
         else navigation.goBack();
         Alert.alert("", "Change password successfully", 
                     [{text: "continue"}]);
-        setSubmitting(false);
-        /* axios.get(url).then(() => {
+        setSubmitting(false); */
+        axios.get(url).then(() => {
             const result = response.data;
-            const {passwordUpdated} = result;
-            if (passwordUpdated === true){
-                Alert.alert("", "Change password successfully", 
-                            [{text: "continue"}]);
-                navigation.popToTop();
+            const {registered, passwordUpdated, error} = result;
+            if (registered === false){
+                handleMessage("Error: The email " + email + " is not "
+                                + " match with any account.", false);
             }
             else{
-                handleMessage("Error: Error occurred while updating "
-                                + "password. Please try again", false);
+                if (passwordUpdated === true){
+                    Alert.alert("", "Change password successfully", 
+                                [{text: "continue"}]);
+                    navigation.popToTop();
+                }
+                else{
+                    handleMessage("Error: Error occurred while updating "
+                                    + "password. Please try again", false);
+                }
             }
             setSubmitting(false);
         }).catch((error) => {
@@ -70,7 +75,7 @@ const ChangePwd = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

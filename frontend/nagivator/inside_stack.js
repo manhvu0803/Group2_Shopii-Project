@@ -11,6 +11,7 @@ import ProductScreen from "../inside_screens/product_screen";
 import UserProfile from "../inside_screens/user_profile";
 import UserAccount from "../inside_screens/user_account";
 import Shoppingcart from "../inside_screens/shoppingcart";
+import MyOrder from "../inside_screens/ordered_screen";
 
 
 const Stack = createStackNavigator();
@@ -49,6 +50,10 @@ const InsideStack = ({route}) => {
 
             <Stack.Screen
                 name="My Shopping cart" component={Shoppingcart}
+            />
+
+            <Stack.Screen
+                name="My Order" component={MyOrder}
             />
         </Stack.Navigator>
     )

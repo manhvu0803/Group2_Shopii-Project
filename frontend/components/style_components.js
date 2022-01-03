@@ -26,7 +26,7 @@ export const Colors = {
 };
 
 const {white, main_bg, tertiary, darklight, brand, fb, gg, i_extra} = Colors;
-const height = Dimensions.get('window').height;
+export const height = Dimensions.get('window').height;
 export const window_width = Dimensions.get('window').width;
 
 export const StyledContainer = styled.SafeAreaView`

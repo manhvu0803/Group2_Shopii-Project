@@ -1,19 +1,10 @@
 import 'react-native-gesture-handler';
-import React, {useState, useMemo} from 'react';
+import React, {useState} from 'react';
 
 
 import RootStack from './nagivator/root_stack';
-/* import ProductScreen from './inside_screens/product_screen';
-import HomeScreen from './inside_screens/homescreen';
-import SearchResultScreen from './inside_screens/search_result_screen';
-import UserProfile from './inside_screens/user_profile';
-import UserAccount from './inside_screens/user_account';
-import MeScreen from './inside_screens/Me'; */
 
-import { AuthContext } from './components/context_component';
-
-
-import AppLoading from 'expo-app-loading';
+//import AppLoading from 'expo-app-loading';
 
 import  AsyncStorage  from '@react-native-async-storage/async-storage';
 

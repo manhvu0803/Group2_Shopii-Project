@@ -7,22 +7,16 @@ import {View, TouchableOpacity, Text, ActivityIndicator,
 }from "react-native";
 
 //style components:
-import{ StyledContainer, Innercontainer,
-        Title,
+import{ StyledContainer, Innercontainer, Title,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, Msgline,
-        StyledButton, ButtonText, SocialButtonPart,
-        MyRadioButton,
+        StyledButton, ButtonText, SocialButtonPart, 
         Colors, StatusBarHeight,
 } from "../components/style_components";
 
 //icon components:
-import {Octicons, MaterialIcons, FontAwesome5, 
-        MaterialCommunityIcons, Ionicons,
+import {Octicons, MaterialCommunityIcons, Ionicons,
 } from "@expo/vector-icons";
-
-//Date time picker components:
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 //scroll component:
 import Scroll_component from '../components/scroll_component';
@@ -56,17 +50,29 @@ const UserAccount = ({navigation, route}) =>{
 
     const handleChangeUsrename = (credentials, setSubmitting) => {
         handleMessage(null);
-        Alert.alert("", "Change username successfully", [{text: "OK"}]);
-        preCredentials.data.username = credentials.username;
-        setStoredCredentials(preCredentials);
-        if (true){
-
-        }
-        else{
-            
-        }
-        setSubmitting(false);
-        setEditing(false);
+        const {username} = credentials;
+        const url = ("https://shopii-spirit.herokuapp.com/edit?"
+                    + "sessionid=" + preCredentials.data["sessionId"].toString()
+                    + "&username=" + username);
+        axios.get(url).then((response) => {
+            const result = response.data;
+            const {sessionExisted, sessionExpired, error, infoUpdated} = result;
+            if (error == null && infoUpdated == true){
+                Alert.alert("", "Change username successfully", [{text: "OK"}]);
+                preCredentials.data.username = credentials.username;
+                updateUsername(preCredentials);
+            }
+            else{
+                handleMessage(error, false);
+            }
+            setSubmitting(false);
+            setEditing(false);
+        }).catch((error) => {
+            console.log(error.JSON);
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        });
     };
 
     const handleMessage = (mess, type = false) => {
@@ -81,7 +87,7 @@ const UserAccount = ({navigation, route}) =>{
         })
         .catch((error) => {
             console.log(error);
-            handleMessage("Updating username failed.")
+            handleMessage("Updating username in this session failed.")
         })
     }
 

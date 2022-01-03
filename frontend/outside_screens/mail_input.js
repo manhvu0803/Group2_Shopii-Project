@@ -41,7 +41,7 @@ const MailInput = ({navigation, route}) =>{
     const handleMailInput = (credentials, setSubmitting) => {
         handleMessage(null);
         const email = credentials.email;
-        var url;
+        /* var url;
         if (goto === "InforInput"){
             url = ("https://shopii-spirit.herokuapp.com/verify?"
                     + "email="+email);
@@ -49,15 +49,25 @@ const MailInput = ({navigation, route}) =>{
         else{
             url = ("https://shopii-spirit.herokuapp.com/forgotpassword?"
                     + "email="+email);
-        }
+        } */
+        const url = "https://shopii-spirit.herokuapp.com/verify?"
+                    + "email="+email;
         console.log(url);
-        navigation.navigate("MailVerify", {goto, email, reason});
-        setSubmitting(false);
-        /* axios.get(url).then((response) => {
+        /* navigation.navigate("MailVerify", {goto, email, reason});
+        setSubmitting(false); */
+        axios.get(url).then((response) => {
             const result = response.data;
-            const {verified, verifyCodeSent, error} = result;
+            const {verifyCodeSent} = result;
             console.log(result);
-            if (goto === "InforInput"){
+            if (verifyCodeSent === true){
+                navigation.navigate("MailVerify", {goto, email});
+            }
+            else{
+                handleMessage("Error: Cannot send code to your email.\n" 
+                            + "Please make sure to input the right email.", 
+                            false);
+            }
+            /* if (goto === "InforInput"){
                 if (verified === true){
                     handleMessage("Error: This email already used " 
                                 + "for an account.", false);
@@ -86,14 +96,14 @@ const MailInput = ({navigation, route}) =>{
                     handleMessage("Error: This email has not been used "
                                 + "for any account.", false);
                 }
-            }
+            } */
             setSubmitting(false);
         }).catch((error) => {
             console.log(error.JSON);
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {

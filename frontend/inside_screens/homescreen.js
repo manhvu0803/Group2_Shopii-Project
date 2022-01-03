@@ -9,17 +9,13 @@ import {View, Text, Image,
 
 //style components:
 import{ StyledContainer, Innercontainer,
-        Logo, StyledSearchInput, 
-        StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon, RightIcon, StyledButton, ButtonText,
-        Msgline, Emptyline,
-        ExtraView, ExtraText, ExtraLink, ExtraTextLink,
-        SocialButtonPart, Colors, StatusBarHeight
+        StyledSearchInput, 
+        StyledFormArea, 
+        RightIcon,Colors, StatusBarHeight
 } from "./../components/style_components";
 
 //icon components:
-import {Octicons, Ionicons, AntDesign, 
-        Fontisto, MaterialCommunityIcons
+import {Ionicons, AntDesign, 
 } from "@expo/vector-icons";
 
 //scroll component:
@@ -34,7 +30,7 @@ import { Formik } from 'formik';
 import { CredentialsContext } from './../components/context_component';
 
 //Colors:
-const {brand, darklight, white, i_extra} = Colors;
+const {brand, darklight, white} = Colors;
 
 const render_header = ({handleBlur, handleChange, 
                         handleSubmit, values, storedCredentials, 
@@ -104,6 +100,12 @@ const HomeScreen = ({navigation, route}) => {
                         category:"Shoes"},
                         {image: require("./../assets/electronice_device.png"),
                         category:"Electronics"},
+                        {image: require("./../assets/electrical_equipment.png"),
+                        category:"Electrical equipment"},
+                        {image: require("./../assets/decorative.png"),
+                        category:"Decorative"},
+                        {image: require("./../assets/cosmetics.png"),
+                        category:"Cosmetics"},
                         ];
 
 
@@ -225,8 +227,7 @@ const CategoryBox = ({image, category, navigation}) => {
                     <Image 
                         style={{
                             height: '100%',
-                            width: '80%',
-                            marginLeft: 30,
+                            width: '100%',
                         }}
                         source={image}
                     />

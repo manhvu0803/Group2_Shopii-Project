@@ -2,18 +2,14 @@
 //base components of react-native:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useContext } from "react";
-import {View, Text, Image,
-        ActivityIndicator, TouchableOpacity
+import {View, Text, Image, TouchableOpacity
 } from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer, window_width,
-        Logo, StyledSearchInput,
-        StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon, RightIcon, StyledButton, ButtonText,
-        Msgline, Emptyline,
-        ExtraView, ExtraText, ExtraLink, ExtraTextLink,
-        SocialButtonPart, Colors, StatusBarHeight
+        StyledFormArea, 
+        LeftIcon, StyledButton, ButtonText,
+        Colors, StatusBarHeight
 } from "./../components/style_components";
 
 //icon components:
@@ -24,19 +20,12 @@ import {Octicons, Ionicons, AntDesign,
 //scroll component:
 import Scroll_component from './../components/scroll_component';
 
-//header component:
-import {HomeHeader, SearchHeader} from '../components/header_components';
-
-//formik:
-import { Formik } from 'formik';
-
-
 import  AsyncStorage  from '@react-native-async-storage/async-storage';
 
 import { CredentialsContext } from './../components/context_component';
 
 //Colors:
-const {brand, darklight, white, i_extra} = Colors;
+const {brand, white, i_extra} = Colors;
 
 const render_header = ({navigation}) => {
     const {storedCredentials, setStoredCredentials} = useContext(

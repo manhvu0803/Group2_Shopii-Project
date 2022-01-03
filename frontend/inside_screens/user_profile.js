@@ -73,15 +73,35 @@ const UserProfile = ({navigation, route}) =>{
         handleMessage(null);
         const {fullname, dob, phonenb, gender, address}
              = credentials;
-        preCredentials.data.email = fullname;
-        preCredentials.data.dob = toDateSentFormat(date);
-        preCredentials.data.phone = phonenb;
-        preCredentials.data.sex = gender;
-        preCredentials.data.address = address;
-        setStoredCredentials(preCredentials);
-        Alert.alert("", "Change username successfully", [{text: "OK"}]);
-        setSubmitting(false);
-        setEditing(false);
+        const dobsent = toDateSentFormat(date);
+        const url = ("https://shopii-spirit.herokuapp.com/edit?"
+                    + "sessionid=" + preCredentials.data["sessionId"].toString()
+                    + "&fullname=" + fullname + "&dob=" + dobsent 
+                    + "&phone=" + phonenb +"&sex=" + gender 
+                    + "&address=" + address);
+        axios.get(url).then((response) => {
+            const result = response.data;
+            const {sessionExisted, sessionExpired, error, infoUpdated} = result;
+            if (error == null && infoUpdated == true){
+                preCredentials.data.fullname = fullname;
+                preCredentials.data.dob = dobsent;
+                preCredentials.data.phone = phonenb;
+                preCredentials.data.sex = gender;
+                preCredentials.data.address = address;
+                updateProfile(preCredentials);
+                Alert.alert("", "Change username successfully", [{text: "OK"}]);
+            }
+            else{
+                handleMessage(error, false);
+            }
+            setSubmitting(false);
+            setEditing(false);
+        }).catch((error) => {
+            console.log(error.JSON);
+            setSubmitting(false);
+            handleMessage("An error occurred."+ 
+            "Check your network and try again.");
+        });
     };
 
     const handleMessage = (mess, type = false) => {
@@ -132,6 +152,17 @@ const UserProfile = ({navigation, route}) =>{
         return aDate.getTime();
     }
 
+    const updateProfile = (credentials) => {
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(credentials))
+        .then(() => {
+            setStoredCredentials(credentials);
+        })
+        .catch((error) => {
+            console.log(error);
+            handleMessage("Updating user's profile in this session failed.")
+        })
+    }
+
     return (
         <Scroll_component>
             <StyledContainer style={{
@@ -168,7 +199,7 @@ const UserProfile = ({navigation, route}) =>{
                         Your Profile
                     </Title>
                     <Formik
-                    initialValues={{fullname: preCredentials.data.email, 
+                    initialValues={{fullname: preCredentials.data.fullname, 
                     dob: '',
                     phonenb: preCredentials.data.phone, 
                     gender: '', 
@@ -181,7 +212,7 @@ const UserProfile = ({navigation, route}) =>{
                             setSubmitting(false);
                         }
                         else{
-                            if (values.fullname===preCredentials.data.email
+                            if (values.fullname===preCredentials.data.fullname
                             && date.toLocaleDateString() === new Date(preCredentials.data.dob).toLocaleDateString() 
                             && values.phonenb===preCredentials.data.phone
                             && genderval === preCredentials.data.sex   
@@ -190,10 +221,13 @@ const UserProfile = ({navigation, route}) =>{
                                 setSubmitting(false);
                             }
                             else{
-                                let temp = "abc";
                                 const rgxNumber = new RegExp(/[0-9]/, 'g');
-                                const phone = values.phonenb.replaceAll(" ", "");
-                                if(!rgxNumber.test(phone)) {
+                                const temp = values.phonenb.split(" ");
+                                values.phonenb = "";
+                                for (let i = 0; i < temp.length; i++){
+                                    values.phonenb = values.phonenb + temp[i];
+                                }
+                                if(!rgxNumber.test(values.phonenb)) {
                                     handleMessage("Phone number can only " 
                                                 + "contain number");
                                     setSubmitting(false);
@@ -215,7 +249,7 @@ const UserProfile = ({navigation, route}) =>{
                             placeholderTextColor='black'
                             onChangeText={handleChange('fullname')}
                             onBlur={handleBlur('fullname')}
-                            value={preCredentials.data.email}
+                            value={preCredentials.data.fullname}
                             isFullname = {true}
                             />
                             :
@@ -356,7 +390,7 @@ const UserProfile = ({navigation, route}) =>{
                                 onPress={() => {
                                     setEditing(false);
                                     handleMessage(null);
-                                    values.fullname = preCredentials.data.email;
+                                    values.fullname = preCredentials.data.fullname;
                                     setDate(new Date(preCredentials.data.dob));
                                     values.phonenb = preCredentials.data.phone;
                                     setGenderval(preCredentials.data.sex); 

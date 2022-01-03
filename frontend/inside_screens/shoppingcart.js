@@ -4,34 +4,28 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState, useContext } from "react";
 import {View, Text, FlatList, Image, 
         KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, 
-        TouchableOpacity, TextInput, 
+        TouchableOpacity, 
 } from "react-native";
 
 //style components:
-import{ StyledContainer, Innercontainer,
-        Logo, StyledSearchInput, Title, 
-        StyledFormArea, StyledInputLabel, StyledTextInput,
-        LeftIcon, RightIcon, StyledButton, ButtonText,
-        Msgline, Emptyline,
-        ExtraView, ExtraText, ExtraLink, ExtraTextLink,
-        SocialButtonPart, Colors, StatusBarHeight
+import{ StyledContainer, StyledSearchInput, Title, 
+        StyledFormArea, StyledButton, ButtonText,
+        Colors, StatusBarHeight
 } from "./../components/style_components";
 
 //icon components:
-import {Octicons, Ionicons, AntDesign, 
-    Fontisto, MaterialCommunityIcons
+import {Ionicons, 
 } from "@expo/vector-icons";
 
 //formik:
 import { Formik } from 'formik';
 
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
 import { CredentialsContext } from './../components/context_component';
 
-//scroll component:
-import Scroll_component from '../components/scroll_component';
-
 //Colors:
-const {brand, darklight, white, i_extra} = Colors;
+const {brand, white, gg} = Colors;
 
 
 const render_header = ({navigation}) => {
@@ -51,7 +45,7 @@ const render_header = ({navigation}) => {
                         onPress={() => {
                             navigation.goBack()
                         }}>
-                    <Ionicons name="chevron-down"
+                    <Ionicons name="chevron-back"
                     size={35} color={white}/>
                 </TouchableOpacity>
                 <Title style={{
@@ -69,45 +63,60 @@ const render_header = ({navigation}) => {
 
 //Product screen implementation:
 const Shoppingcart = ({navigation, route}) => {
-    //const product = route.params.item;
-
-    const search= "A";
-    const searchby="";
-
-    const img = "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D";
-    
-    const item = {available: 5, category: "clothing", description: "White T shirt", id: "product1", imageUrl: [
-    "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D", 
-    "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D"], 
-    name: "White T shirt", pid: "product2", price: 100000, rating: 4, seller: "username2"};
-
-    const cartList = [{available: 5, category: "clothing", description: "White T shirt", id: "product1", imageUrl: [
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D", 
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D"], 
-                        name: "White T shirt", pid: "product2", price: 100000, rating: 4, seller: "username2"},
-                        
-                        {available: 5, category: "clothing", description: "White T shirt", id: "product2", imageUrl: [
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D", 
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D"], 
-                        name: "White T shirt", pid: "product2", price: 100000, rating: 4, seller: "username2"},
-                        
-                        {available: 5, category: "clothing", description: "White T shirt", id: "product3", imageUrl: [
-                            "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D", 
-                            "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D"], 
-                            name: "White T shirt", pid: "product2", price: 100000, rating: 4, seller: "username2"},
-                        
-                        {available: 5, category: "clothing", description: "White T shirt", id: "product4", imageUrl: [
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D", 
-                        "https://storage.googleapis.com/projectshopiicnpm-d6027.appspot.com/products/product2/1.jpg?GoogleAccessId=firebase-adminsdk-bp2t1%40projectshopiicnpm-d6027.iam.gserviceaccount.com&Expires=1641638498&Signature=PlqQoCrySUFiJ2xDfvkysaj1EcEi%2FG4lNme6YRiKpcO52bAGxwKEiIKe22stVm0aSd%2BnrfKiBRB%2FtLHXtvCDvu%2FpP8Vwg0JJBJ9tst1uAAA9PX6Um0yiIAGZXhufvr5HsCeiM%2FnQYwqZycWWq7r3Uii1mtV8qERs%2FBwnvJGZepYoVSAvStVNgTwZJF9Sfd85c8tOdRiVxme3%2BoWqJnYlCvkY7mWFsA4XlQjeMOM%2FWob6YOMuT6BM%2FH%2FnuZR3HFcYZAyh4iOuLe2DAtseNRQSy3rXRGC488X9cDx%2F7A4OSXoabaRSuwM9e7hlXKHQhtdvJCQcNrkS%2BSck%2FnjJ3AFx7A%3D%3D"], 
-                        name: "White T shirt", pid: "product2", price: 100000, rating: 4, seller: "username2"},
-                      ];
 
     const {storedCredentials, setStoredCredentials} = useContext(
-        CredentialsContext);
+                                                        CredentialsContext);
+    const preCredentials = {...storedCredentials} || {};
 
     const NumtoString = (num) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
+
+    const RemoveFromShoppingcart = (productToRemove) => {
+        const index = preCredentials.data["shopping cart"].indexOf(productToRemove);
+        preCredentials.data["shopping cart"].splice(index, 1);
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(preCredentials))
+        .then(() => {
+            setStoredCredentials(preCredentials);
+        })
+        .catch((error) => {
+            console.log(error);
+            preCredentials = {...storedCredentials} || {};
+            handleMessage("Adding product failed.")
+        })
+    }
+
+    const Order = () => {
+        const indexOrdered = []
+        for (const index in preCredentials.data["shopping cart"]){
+            const product = JSON.parse(JSON.stringify(preCredentials.data["shopping cart"][index]));
+            if (product["amount to order"] > 0){
+                product["price"] = product["price"] * product["amount to order"];
+                product["date ordered"] = new Date(Date.now()).toLocaleString();
+                product["state"] = "Waiting shop to accept";
+                preCredentials.data["ordered list"].push(product);
+                indexOrdered.push(index);
+            }
+        }
+        const indexOrderedReverse = indexOrdered.reverse();
+        for (const index in indexOrderedReverse){
+            preCredentials.data["shopping cart"].splice(indexOrderedReverse[index], 1);
+        }
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(preCredentials))
+        .then(() => {
+            setStoredCredentials(preCredentials);
+        })
+        .catch((error) => {
+            console.log(error);
+            preCredentials = {...storedCredentials} || {};
+            handleMessage("Ordering product failed.")
+        })
+    }
+
+    const price = preCredentials?.data["shopping cart"]?.reduce((total,item) => {
+       total += parseInt(item['amount to order'] || 0, 10) * parseInt(item.price, 10);
+       return total;
+    }, 0);
 
     return(
         <KeyboardAvoidingView style={{flex:1}}>
@@ -118,132 +127,176 @@ const Shoppingcart = ({navigation, route}) => {
                     flex: 1, backgroundColor: 'white',
                 }}>
                     <StatusBar style = "light"/>
-                    <Formik 
-                        initialValues={{search: '', searchby: 'searchquery', amount: '0'}}
-                        onSubmit={(values) => {
-                            if (values.search.length > 0){
-                                console.log(values.search);
-                                navigation.push("Search result", 
-                                                values)
-                            }
-                        }}
-                    >
-                        {({handleChange, handleBlur,
-                        handleSubmit, values}) =>
-                        (
-                            <>
-                                {render_header({
-                                    navigation})}
 
-                                {cartList!=null &&
-                                    <FlatList 
-                                        style={{
-                                            overflow: 'hidden',
-                                        }}
-                                        data={cartList}
-                                        keyExtractor={item => item.id}
-                                        renderItem={({item, index}) => (
-                                            <View style={{paddingTop: 15}}>
-                                                <View style={{
-                                                    height: 170,
-                                                    paddingLeft: 20,
-                                                    backgroundColor: white,
-                                                    flexDirection: 'row',
-                                                    elevation: 5,
-                                                }}>
-                                                    <Image style={{
-                                                            height: 150,
-                                                            width: 150,
-                                                        }}
-                                                        source={{uri: item.imageUrl[0]}}
-                                                    />
-                                                    <View style={{
-                                                            paddingLeft: 10
-                                                        }}
-                                                    >
-                                                        <TouchableOpacity 
-                                                            onPress={() => {
-                                                                navigation.push("Product detail", {item});
-                                                            }}>
-                                                            <Text style={{
-                                                                    fontSize: 20,
-                                                                    fontWeight: 'bold',
-                                                                }}
-                                                            >
-                                                                {item.name}
-                                                            </Text>
-                                                        </TouchableOpacity>
-                                                        <Text style={{
-                                                                fontSize: 20,
-                                                            }}
-                                                        >
-                                                            Price: {NumtoString(item.price)}đ
-                                                        </Text>
-                                                        <Text style={{fontSize: 20}}>Amount:</Text>
-                                                        <AmountInput onChangeText={handleChange('amount')}
-                                                                    onBlur={handleBlur('amounr')}
-                                                                    value={values.amount}
-                                                        />
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        )}
-                                    />
-                                }
-                                <View style={{
-                                    height: 100,
-                                    width:'100%',
-                                    flexDirection: 'row',
-                                    borderTopWidth: 1,
-                                    paddingLeft: 10,
-                                }}>
-                                    <View style={{paddingTop: 5,
-                                            width: '50%',
-                                        }}>
-                                        <Text style={{
-                                                fontSize: 30,
-                                            }}
-                                        >
-                                            Total:
-                                        </Text>
-                                        <Text style={{
-                                                fontSize: 30,
-                                            }}
-                                        >
-                                            {NumtoString(1000000)}đ
-                                        </Text>
-                                    </View>
+                    {render_header({navigation})}
+                    
+                    <FlatList 
+                        data={preCredentials.data["shopping cart"]}
+                        keyExtractor={item => item.id}
+                        renderItem={({item, index}) => (
+                            <Formik 
+                                initialValues={{search: '', searchby: 'searchquery', amount: null}}
+                                onSubmit={(values) => {
+                                    if (values.search.length > 0){
+                                        console.log(values.search);
+                                        navigation.push("Search result", values)
+                                    }
+                                }}
+                            >
+                            {({handleChange, handleBlur,
+                                handleSubmit, values}) =>
+                                (
                                     <View style={{
-                                            alignItems: 'center',
-                                            width: '70%', height: '100%',
-                                            paddingTop: 15,
-                                        }}>
-                                        <StyledButton google={true} 
-                                            style={{
-                                                marginRight: 10,
-                                                borderRadius: 15,
-                                                padding: 0,
-                                                backgroundColor: brand,
-                                            }}
-                                            onPress={() => {
-                                                console.log("Ordered.")
+                                            height: 200,
+                                        }}
+                                    >
+                                        <View style={{
+                                                height: "95%",
+                                                paddingTop: 5,
+                                                paddingLeft: 10,
+                                                backgroundColor: white,
+                                                flexDirection: 'row',
+                                                elevation: 5,
                                             }}
                                         >
-                                            <ButtonText 
-                                                style={{
-                                                    paddingLeft: 5,
-                                                    color: white,
-                                                    fontSize: 20,   
+                                            <View style={{paddingTop: 5}}>
+                                                <Image style={{
+                                                        height: 170,
+                                                        width: 170,
+                                                    }}
+                                                    source={{uri: item.imageUrl[0]}}
+                                                />
+                                            </View>
+                                            <View style={{
+                                                    paddingLeft: 10
                                                 }}
                                             >
-                                                Order
-                                            </ButtonText>
-                                        </StyledButton>
+                                                <TouchableOpacity 
+                                                    onPress={() => {
+                                                        navigation.push("Product detail", {item});
+                                                    }}>
+                                                    <Text style={{
+                                                            fontSize: 20,
+                                                            fontWeight: 'bold',
+                                                        }}
+                                                    >
+                                                        {item.name}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                                <Text style={{
+                                                        fontSize: 20,
+                                                    }}
+                                                >
+                                                    Price: {NumtoString(item.price)}đ
+                                                </Text>
+                                                <Text style={{fontSize: 20}}>Amount:</Text>
+                                                <AmountInput  onChangeText={(e) => {
+                                                    try {
+                                                        handleChange('amount');
+                                                        const idx = preCredentials.data["shopping cart"].findIndex(itemSearch => itemSearch.id == item.id);
+                                                        if (idx > -1){
+                                                            preCredentials.data["shopping cart"][idx]['amount to order'] = parseInt(e,10) || 0;
+                                                            AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(preCredentials))
+                                                            .then(() => {
+                                                                setStoredCredentials(preCredentials);
+                                                            })
+                                                            .catch((error) => {
+                                                                console.log(error);
+                                                                preCredentials = {...storedCredentials} || {};
+                                                                handleMessage("Changing amount of product to order failed.")
+                                                            })
+                                                        }
+                                                    }catch(err) {
+                                                           console.log(err)
+                                                    }
+                                                }}
+                                                            onBlur={handleBlur('amount')}
+                                                            value={values.amount==null ? item["amount to order"].toString() : values.amount}
+                                                />
+                                                <StyledButton google={true} 
+                                                    style={{
+                                                        width: '70%',
+                                                        height: '25%',
+                                                        marginRight: 10,
+                                                        borderRadius: 15,
+                                                        padding: 0,
+                                                        backgroundColor: gg,
+                                                    }}
+                                                    onPress={() => {
+                                                        RemoveFromShoppingcart(item);
+                                                    }}
+                                                >
+                                                    <ButtonText 
+                                                        style={{
+                                                            paddingLeft: 5,
+                                                            color: white,
+                                                            fontSize: 15,   
+                                                        }}
+                                                    >
+                                                        Remove from cart
+                                                    </ButtonText>
+                                                </StyledButton>
+                                            </View>
+                                        </View>
                                     </View>
-                                </View>
-                            </>
-                            )}
-                    </Formik>
+                                )}
+                            </Formik>
+                        )}
+                    />
+                    <View style={{
+                            height: 100,
+                            width:'100%',
+                            flexDirection: 'row',
+                            paddingLeft: 10,
+                        }}
+                    >
+                        <View style={{paddingTop: 5,
+                                width: '50%',
+                            }}
+                        >
+                            <Text style={{
+                                    fontSize: 30,
+                                }}
+                            >
+                                Total:
+                            </Text>
+                            <Text style={{
+                                    fontSize: 30,
+                                }}
+                            >
+                                {NumtoString(price)}đ
+                            </Text>
+                        </View>
+                        <View style={{
+                                alignItems: 'center',
+                                width: '70%', height: '100%',
+                                paddingTop: 15,
+                            }}
+                        >
+                            <StyledButton google={true} 
+                                style={{
+                                    marginRight: 10,
+                                    borderRadius: 15,
+                                    padding: 0,
+                                    backgroundColor: brand,
+                                    }}
+                                    onPress={() => {
+                                    console.log("Ordered.");
+                                    Order();
+                                }}
+                            >
+                                <ButtonText 
+                                    style={{
+                                        paddingLeft: 5,
+                                        color: white,
+                                        fontSize: 20,   
+                                    }}
+                                >
+                                    Order
+                                </ButtonText>
+                            </StyledButton>
+                        </View>
+                    </View>
                 </StyledContainer>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -254,127 +307,21 @@ const AmountInput = ({handleSubmit, ...props}) => {
     return (
         <View style={{
             marginTop: 4,
-            width: 150,
+            width: "75%",
             height: 30,
             borderRadius: 25,
             elevation: 5,
         }}>
             <StyledSearchInput style={{
-                top: -3,
-                                height: 30,
-                                paddingLeft: 30,
-                                paddingRight: 30,
-                                textAlign: 'center',
-                            }} 
-                                {...props}/>
+                    top: -3,
+                    height: 30,
+                    paddingLeft: 30,
+                    paddingRight: 30,
+                    textAlign: 'center',
+                }} 
+                {...props}/>
         </View>
     )
 }
 
 export default Shoppingcart;
-
-
-                                /* <View style={{
-                                    marginTop: 40,
-                                    paddingLeft: 10,
-                                    paddingRight: 10,
-                                }}>
-                                    <View style={{
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                    }}>
-                                        <View style={{
-                                                paddingTop: 10,
-                                                paddingLeft: 50,
-                                            }}
-                                        >
-                                            <Image style={{
-                                                        height: 200,
-                                                        width: 200,
-                                                    }}
-                                                source={{uri: product.imageUrl[1]}}/>
-                                        </View>
-
-                                        <View style={{
-                                                paddingRight: 20,
-                                            }}
-                                        >
-                                            <Text style={{
-                                                    fontSize: 20,
-                                                    fontWeight: 'bold',
-                                                }}
-                                            >
-                                                {product.name}
-                                            </Text>
-
-                                            <Text style={{
-                                                    fontSize: 20,
-                                                    paddingBottom: 5,
-                                                }}
-                                            >
-                                                Available: {product.available}
-                                            </Text>
-
-                                            <StyledButton google={true} style={{
-                                                    width: '80%', height: 60,
-                                                    padding: 0,
-                                                    backgroundColor: brand,
-                                                }}
-                                                onPress={() => {
-                                                    if (storedCredentials !== null){
-                                                        console.log("Added.")
-                                                    }
-                                                    else{
-                                                        navigation.navigate("Login");
-                                                    }
-                                                }}
-                                            >
-                                                <ButtonText 
-                                                    style={{
-                                                        color: white,
-                                                        fontSize: 17,   
-                                                    }}
-                                                >
-                                                    Add to shopping cart
-                                                </ButtonText>
-                                            </StyledButton>
-                                        </View>
-                                    </View>
-
-                                    <View style={{
-                                            marginTop: 20,
-                                            paddingLeft: 10,
-                                        }}
-                                    >
-                                        <Text style={{
-                                                fontSize: 30,
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                                Price:
-                                        </Text>
-                                        <Text style={{
-                                                fontSize: 30,
-                                            }}
-                                        >
-                                            {product.price}đ
-                                        </Text>
-
-                                        <Text style={{
-                                                fontSize: 30,
-                                                marginTop: 5,
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                                Description:
-                                        </Text>
-                                        <Text style={{
-                                                fontSize: 20,
-                                                marginTop: 5,
-                                            }}
-                                        >
-                                                {product.description}
-                                        </Text>
-                                    </View>
-                                </View> */
