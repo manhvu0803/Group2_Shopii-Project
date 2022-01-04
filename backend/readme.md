@@ -70,9 +70,9 @@ Respond: a json that contains:
 Respond: list of categories
 
 ## Get product
-/product?pid={product id}
-/product?category={category name}&page={page number}
-/product?searchquery{query string}
+/product?pid={product id}<br/>
+/product?category={category name}&page={page number}<br/>
+/product?searchquery={query string}
 
 Respond: a json that contains:
 - existed: true if there are at least 1 product

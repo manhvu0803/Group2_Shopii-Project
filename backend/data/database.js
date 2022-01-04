@@ -24,6 +24,8 @@ var isReady = false;
 db.collection("users").get().then((res) => {
 	res.forEach((doc) => {
 		let data = doc.data();
+		data.username = doc.id;
+		data.dob = data.dob.toDate().toISOString().split("T")[0];
 		users.set(doc.id, data);
 		if (data.email)
 			emailMap.set(data.email, doc.id);
@@ -97,7 +99,7 @@ exports.registerUser = async function(username, userData)
 	emailMap.set(userData.email, username);
 	let userDoc = db.collection("users").doc(username);
 	await userDoc.set(userData);
-	
+	userData.dob = userData.dob.toDate().toISOString().split("T")[0];
 	console.log("New user written to database successfully");
 }
 
