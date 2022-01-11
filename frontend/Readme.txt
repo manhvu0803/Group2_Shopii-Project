@@ -1,3 +1,4 @@
+## What we have done:
 This folder contains all the screens finished of project, which includes:
 _Outside screens such as login screen, sign-up screen, get back password screen.
 _Inside screens such as home, me, my shopping cart, my order, my account, my profile.
@@ -5,7 +6,8 @@ _Inside screens such as home, me, my shopping cart, my order, my account, my pro
 All the screens is impletemented with expo react native.
 
 
-The packages need to have to run those file are (will update when needed):
+## Needed packages:
+The packages need to have to run those files are (will update when needed):
 _expo-cli (install by using command npm install -g expo-cli)
 _formik (install by using command expo install formik)
 _styled-components (install by using command expo install styled-components)
@@ -20,16 +22,24 @@ _axios (install by using command expo install axios)
 _async-storage (install by using command npm install @react-native-async-storage/async-storage)
 
 
-To run the project correctly with expo (until now):
+## How to run the project:
+After having installed all need packages, to run the project correctly with expo (until now):
 _Create a project by using expo init <Project's name>
-_Put all folder into the folder of the project which you was just created.
+_Put all folder and App.js (inside frontend folder) into the folder of the project which you was just created.
 _Copy all image in folder pics and put into the folder assets 
 (it will be created automatically when project is created).
-_Only need to command <import RootStack from './nagivator/root_stack';> in Apps.js file to run the project.
+_Open the project folder in your IDE (for us, we used VSCode).
+_Open file app.json and change the path of "icon" to ./assets/my_icon.png 
+and the path of "image" (of "splash") to "./assets/my_splash.png"
+_Make sure to installed the android SDK and have 1 AVD (Android Virtual Device) 
+or you can use your real Android phone.
+_Open terminal, cd to project folder, run npm start to start the project.
+_On the website opened, choose to run on Android Virtual Device or real device 
+(do not run on iphone because our app is made to work on android).
 (Not sure if these files can work with project created with react-native-cli)
 
 
-Request (copy from readme.md of backend):
+## Request (copy from readme.md of backend):
 The server is hosted at https://shopii-spirit.herokuapp.com
 
 ## Ready
