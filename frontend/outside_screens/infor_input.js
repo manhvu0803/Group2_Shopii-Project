@@ -6,16 +6,17 @@ import {View, TouchableOpacity, Text, ActivityIndicator}from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
+        Title,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, Msgline,
         StyledButton, ButtonText,
         MyRadioButton,
-        Colors
+        Colors, StatusBarHeight,
 } from "./../components/style_components";
 
 //icon components:
 import {Octicons, MaterialIcons, FontAwesome5, 
-        MaterialCommunityIcons
+        MaterialCommunityIcons, Ionicons,
 } from "@expo/vector-icons";
 
 //Date time picker components:
@@ -59,8 +60,9 @@ const InforInput = ({navigation, route}) =>{
         handleMessage(null);
         const {fullname, dob, phonenb, gender, address}
              = credentials;
+        const dobsent = toDateEpoch(date);
         navigation.navigate("UsnPwdCreate", 
-                            {email, fullname, dob, phonenb, 
+                            {email, fullname, dobsent, phonenb, 
                             gender, address});
         setSubmitting(false);
     };
@@ -90,11 +92,50 @@ const InforInput = ({navigation, route}) =>{
 
         return timestamp;
     }
+    
+    const toDateSentFormat = (aDate) => {
+        const dateString = date.toLocaleDateString();
+        const temp = dateString.split("/");
+        let year = temp[2];
+        for (let i = temp[2].length; i < 4; i++){
+            year = "0" + year;
+        }
+        let month = temp[1];
+        for (let i = temp[1].length; i < 2; i++){
+            month = "0" + month;
+        }
+        let day = temp[0];
+        for (let i = temp[0].length; i < 2; i++){
+            day = "0" + day;
+        }
+        return year + "-" + month + "-" + day;
+    }
+
+    const toDateEpoch = (aDate) => {
+        return aDate.getTime().toString();
+    }
 
     return (
-        <Scroll_component>
-            <StyledContainer style={{paddingTop: 55}}>
-                <StatusBar style="dark"/>
+        <StyledContainer style={{
+                paddingTop: 10 + StatusBarHeight,
+                }}>
+            <StatusBar style="dark"/>
+            {/* header */}
+            <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    paddingBottom: 8,
+                    backgroundColor: white,
+                    width: "14%",
+            }}>
+                <TouchableOpacity onPress={() => {
+                    navigation.goBack();
+                }}>
+                    <Ionicons name="chevron-back" 
+                        size={30} color={brand}/>
+                </TouchableOpacity>
+            </View>
+            <Scroll_component>
                 <Innercontainer>
                     {show && (
                         <DateTimePicker
@@ -106,37 +147,45 @@ const InforInput = ({navigation, route}) =>{
                         onChange={onChange}
                         />
                     )}
-
+                    <Title style={{paddingBottom: 20}}>
+                        Information Input
+                    </Title>
                     <Formik
                     initialValues={{fullname: '', dob: '',
                     phonenb: '', gender: '', address: ''}}
                     onSubmit={(values, {setSubmitting}) => {
-                        if (values.fullname=="" || 
-                            values.dob=="" || 
-                            values.phonenb=="" || 
-                            values.gender=="" || 
-                            values.address==""){
+                        if (values.fullname.trim().length==0 || 
+                            values.phonenb.trim().length==0 || 
+                            values.address.trim().length==0){
                             handleMessage("Please fill all the fields.");
                             setSubmitting(false);
                         }
                         else{
                             var valid_phn = true;
+                            const rgxNumber = new RegExp(/[0-9]/, 'g');
+                            const phone = values.phonenb;
                             const length = values.phonenb.length;
+                            if(!rgxNumber.test(phone)) {
+                                handleMessage("Phone number can only " 
+                                            + "contain number");
+                                setSubmitting(false);
+                            }
+                            /* const length = values.phonenb.length;
                             for (var i = 0; i < length; i++){
                                 if (values.phonenb.charAt(i) < '0' || 
                                     values.phonenb.charAt(i) > '9'){
                                         valid_phn = false;
                                         break;
                                     }
-                            }
-                            if (valid_phn === true){
+                            } */
+                            else{
                                 handleInforInput(values, setSubmitting);
-                            }
+                            }/* 
                             else{
                                 handleMessage("Phone number can only " 
                                             + "contain number");
                                 setSubmitting(false);
-                            }
+                            } */
                         }
                     }}>
                         {({handleChange, handleBlur,
@@ -220,8 +269,8 @@ const InforInput = ({navigation, route}) =>{
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>
-            </StyledContainer>
-        </Scroll_component>
+            </Scroll_component>
+        </StyledContainer>
     );
 }
 
@@ -264,6 +313,59 @@ const MyTextInput = ({label, icon, isFullname, isPhone,
             {isAddress && <LeftIcon style={{paddingLeft: 12}}>
                 <FontAwesome5 name={icon} size={30} color={i_extra}/>
             </LeftIcon>}
+        </View>
+    )
+}
+
+const GenderButton = ({setGender}) => {
+    const gender = ['male', 'female', 'other'];
+    const [selected=0, setSelected] = useState();
+    return (
+        <View style={{
+            paddingLeft: 120,
+            paddingTop: 20,
+            width: "70%",
+            justifyContent:'center',
+            flexDirection:'row',
+        }}>
+            {gender.map((val, key) => {
+                return(
+                    <View key={key}>
+                        {selected != key ?
+                        <TouchableOpacity style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                            marginBottom: 10
+                        }}
+                        onPress={() => {
+                            setSelected(key);
+                            if (key == 0) setGender("male");
+                            else if (key == 1) setGender("female");
+                            else setGender("other");
+                        }}>
+                            <MaterialCommunityIcons size={30} 
+                            name="circle-outline"
+                            color={darklight}/>
+                            <Text>{val}</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                            marginBottom: 10
+                        }}>
+                            <MaterialCommunityIcons size={30} 
+                            name="circle-slice-8"
+                            color={brand}/>
+                            <Text>{val}</Text>
+                        </TouchableOpacity>
+                        }
+                    </View>
+                )
+            })
+            }
         </View>
     )
 }

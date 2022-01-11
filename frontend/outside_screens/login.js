@@ -1,17 +1,17 @@
 //import part:
 //base components of react-native:
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {View, Text, ActivityIndicator} from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
-        Logo,
+        Logo, SubTitle,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon, StyledButton, ButtonText,
         Msgline, Emptyline,
         ExtraView, ExtraText, ExtraLink, ExtraTextLink,
-        SocialButtonPart, Colors, StatusBarHeight
+        SocialButtonPart, Colors, StatusBarHeight,
 } from "./../components/style_components";
 
 //icon components:
@@ -23,44 +23,58 @@ import Scroll_component from './../components/scroll_component';
 //API client axios:
 import axios from 'axios';
 
-
 //formik:
 import { Formik } from 'formik';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import { CredentialsContext } from './../components/context_component';
 
 //Colors:
-const {darklight, white, i_extra} = Colors;
+const {brand, darklight, white, i_extra} = Colors;
 
 
 //Login implementation:
 const Login = ({navigation}) =>{
     var goto="";
+    var isLogin = true;
     
     const [hidePwd, setHiddenpwd] = useState(true);
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
 
+    const {storedCredentials, setStoredCredentials} = useContext(
+                                                        CredentialsContext);
+
     const handleLogin = (credentials, setSubmitting) => {
         handleMessage(null);
         const {email, password} = credentials;
+        var loginby = "username";
+        const username_length = email.length;
+        for (var i = 0; i < username_length; i++){
+            if (email[i] == "@"){
+                loginby = "email";
+                break;
+            }
+        }
         const  url = ("https://shopii-spirit.herokuapp.com/login?"
-                    +"username=" + email + "&password="+password);
+                    + loginby + "=" + email + "&password="+password);
         axios.get(url).then((response) => {
             const result = response.data;
-            const {existed, password, data} = result;
-            console.log(data);
-            if (existed !== true){
-                handleMessage("Error: the account may not created yet.", 
-                            existed);
+            const {registered, password, data, error, sessionId} = result;
+            if (registered !== true || password !== true){
+                handleMessage("Error: Invalid username or password.", 
+                false);
             }
             else{
-                if (password !== true){
-                    handleMessage("Error: the password is not correct.", 
-                            password);
-                }
-                else{
-                    console.log("Welcome to our shopping app");
-                }
-                
+                isLogin = true;
+                data["fullname"] = data.email;
+                data["sessionId"] = sessionId;
+                data["shopping cart"] = [];
+                data["ordered list"] = [];
+                Persistlognin({data});
             }
             setSubmitting(false);
         }).catch((error) => {
@@ -76,13 +90,45 @@ const Login = ({navigation}) =>{
         setMessageType(type);
     };
 
+    const Persistlognin = (credentials) => {
+        AsyncStorage.setItem('ShopiiCridentials', JSON.stringify(credentials))
+        .then(() => {
+            setStoredCredentials(credentials);
+            navigation.navigate("Inside Stack");
+        })
+        .catch((error) => {
+            console.log(error);
+            handleMessage("Persisting lognin failed.")
+        })
+    }
+
     return (
         <Scroll_component>
-            <StyledContainer style={{paddingTop: 10}}>
+            <StyledContainer style={{
+                paddingTop: 10 + StatusBarHeight,
+                }}>
                 <StatusBar style="dark"/>
-                <Innercontainer>
+                {/* header */}
+                <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    backgroundColor: white,
+                    width: "14%",
+                }}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate("Inside Stack");
+                    }}>
+                        <Ionicons name="chevron-down" 
+                            size={30} color={brand}/>
+                    </TouchableOpacity>
+                </View>
+                <Innercontainer style={{marginTop: 20}}>
                     <Logo resizeMode="cover"
                     source={require('./../assets/Logo.png')}/>
+
+                    <SubTitle>
+                        Login Page
+                    </SubTitle>
                     
                     <Emptyline/>
 
@@ -94,7 +140,7 @@ const Login = ({navigation}) =>{
                                 setSubmitting(false);
                             }
                             else{
-                                handleLogin(values, setSubmitting);
+                                handleLogin(values, setSubmitting, isLogin);
                             }
                         }}>
                         {({handleChange, handleBlur,
@@ -134,8 +180,10 @@ const Login = ({navigation}) =>{
                                 <ExtraTextLink forgotpwd={true}
                                 onPress={() =>{
                                 goto="ChangePwd";
+                                const reason="forgotpassword";
                                 handleMessage(null);
-                                navigation.navigate("MailInput", {goto});}}
+                                navigation.navigate("MailInput", 
+                                                    {goto, reason});}}
                                 >
                                     Forgot password?
                                 </ExtraTextLink>
@@ -179,26 +227,6 @@ const Login = ({navigation}) =>{
                             <Text style={{textAlign: "center"}}>
                                 or sign-in with
                             </Text>
-                            
-                            <SocialButtonPart>
-                                <StyledButton google={true}
-                                onPress={handleSubmit}>
-                                    <Fontisto name="google"
-                                    color={white} size={17}/>
-                                    <ButtonText google={true}>
-                                        Google
-                                    </ButtonText>
-                                </StyledButton>
-                        
-                                <StyledButton fb={true}
-                                onPress={handleSubmit}>
-                                    <Fontisto name="facebook"
-                                    color={white} size={17}/>
-                                    <ButtonText fb={true}>
-                                        Facebook
-                                    </ButtonText>
-                                </StyledButton>
-                            </SocialButtonPart>
                         </StyledFormArea>)}
                     </Formik>
                 </Innercontainer>

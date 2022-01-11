@@ -2,15 +2,16 @@
 //base components already available in node_module:
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from "react";
-import {View, ActivityIndicator, Alert} from "react-native";
+import {View, ActivityIndicator, Alert, TouchableOpacity} from "react-native";
 
 //style components:
 import{ StyledContainer, Innercontainer,
+        Title,
         StyledFormArea, StyledInputLabel, StyledTextInput,
         LeftIcon, RightIcon,
         StyledButton, ButtonText,
         Msgline,
-        Colors
+        Colors, StatusBarHeight,
 } from "./../components/style_components";
 //icon components:
 import {Octicons, Ionicons} from "@expo/vector-icons";
@@ -22,14 +23,14 @@ import Scroll_component from './../components/scroll_component';
 import { Formik } from 'formik';
 
 //Colors:
-const {darklight, white, i_extra} = Colors;
+const {brand, darklight, white, i_extra} = Colors;
 
 //API client axios:
 import axios from 'axios';
 
 //Login implementation:
 const ChangePwd = ({navigation, route}) =>{
-    const {email} = route.params;
+    const {email, reason} = route.params;
 
     const [hidePwd, setHiddenpwd] = useState(true);
     const [hideconfirmPwd, setHiddenconfirmpwd] = useState(true);
@@ -40,24 +41,33 @@ const ChangePwd = ({navigation, route}) =>{
     const handleChangePWD = (credentials, setSubmitting) => {
         handleMessage(null);
         const {newpassword} = credentials;
-        const  url = ("https://shopii-spirit.herokuapp.com/forgotpassword?" 
+        const  url = ("https://shopii-spirit.herokuapp.com/"+reason+"?" 
                     + "email=" + email + "&password=" + newpassword);
         console.log(url);
-        navigation.popToTop();
+        /* if (reason === "forgotpassword"){
+            navigation.navigate("Login");
+        }
+        else navigation.goBack();
         Alert.alert("", "Change password successfully", 
                     [{text: "continue"}]);
-        setSubmitting(false);
-        /* axios.get(url).then(() => {
+        setSubmitting(false); */
+        axios.get(url).then(() => {
             const result = response.data;
-            const {passwordUpdated} = result;
-            if (passwordUpdated === true){
-                Alert.alert("", "Change password successfully", 
-                            [{text: "continue"}]);
-                navigation.popToTop();
+            const {registered, passwordUpdated, error} = result;
+            if (registered === false){
+                handleMessage("Error: The email " + email + " is not "
+                                + " match with any account.", false);
             }
             else{
-                handleMessage("Error: Error occurred while updating "
-                                + "password. Please try again", false);
+                if (passwordUpdated === true){
+                    Alert.alert("", "Change password successfully", 
+                                [{text: "continue"}]);
+                    navigation.popToTop();
+                }
+                else{
+                    handleMessage("Error: Error occurred while updating "
+                                    + "password. Please try again", false);
+                }
             }
             setSubmitting(false);
         }).catch((error) => {
@@ -65,7 +75,7 @@ const ChangePwd = ({navigation, route}) =>{
             setSubmitting(false);
             handleMessage("An error occurred."+ 
             "Check your network and try again.");
-        }); */
+        });
     };
 
     const handleMessage = (mess, type = false) => {
@@ -75,10 +85,29 @@ const ChangePwd = ({navigation, route}) =>{
 
     return (
         <Scroll_component>
-            <StyledContainer style={{paddingTop: 75}}>
+            <StyledContainer style={{
+                paddingTop: 10 + StatusBarHeight,
+                }}>
                 <StatusBar style="dark"/>
+                {/* header */}
+                <View style={{
+                    paddingLeft: 11.5,
+                    paddingRight: 12,
+                    paddingBottom: 20,
+                    backgroundColor: white,
+                    width: "14%",
+                }}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.goBack();
+                    }}>
+                        <Ionicons name="chevron-back" 
+                            size={30} color={brand}/>
+                    </TouchableOpacity>
+                </View>
                 <Innercontainer>
-
+                    <Title style={{paddingBottom: 20}}>
+                        Change Password
+                    </Title>
                     <Formik
                     initialValues={{newpassword: '', confirmpassword: ''}}
                     onSubmit={(values, {setSubmitting}) => {
@@ -92,6 +121,11 @@ const ChangePwd = ({navigation, route}) =>{
                                 values.confirmpassword){
                             handleMessage("Confirmpassword does not match"
                                         + "Password.");
+                            setSubmitting(false);
+                        }
+                        else if (values.newpassword.length < 8){
+                            handleMessage("Password need at least 8 "
+                                        + "characters.");
                             setSubmitting(false);
                         }
                         else{

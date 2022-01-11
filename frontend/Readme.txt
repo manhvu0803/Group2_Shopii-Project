@@ -1,7 +1,7 @@
-This folder contains all the outside screens, which includes:
-_login screen (done UI, done with login process, try to make the sign in with Google and Facebook work)
-_sign-up screen (done UI, wait to text the sign-up process)
-_get back password screen (done UI, wait to text the change password process)
+This folder contains all the screens finished of project, which includes:
+_Outside screens such as login screen, sign-up screen, get back password screen.
+_Inside screens such as home, me, my shopping cart, my order, my account, my profile.
+
 All the screens is impletemented with expo react native.
 
 
@@ -17,19 +17,97 @@ _navigation pakages (installby using these commands:
 			+npm install @react-navigation/native-stack
 )
 _axios (install by using command expo install axios)
+_async-storage (install by using command npm install @react-native-async-storage/async-storage)
 
 
 To run the project correctly with expo (until now):
 _Create a project by using expo init <Project's name>
-_Put outside_screens, components, navigator folder into the folder of the project which you was just created
-_Put the image Logo.png in to the assets folder (will be generate automatically with your project)
-_Only import RootStack from './nagivator/root_stack'; in Apps.js file to run the project.
+_Put all folder into the folder of the project which you was just created.
+_Copy all image in folder pics and put into the folder assets 
+(it will be created automatically when project is created).
+_Only need to command <import RootStack from './nagivator/root_stack';> in Apps.js file to run the project.
 (Not sure if these files can work with project created with react-native-cli)
 
 
-Request:
-_Login: https://shopii-spirit.herokuapp.com/login?username=<username>&password=<password>
-_Mail input: https://shopii-spirit.herokuapp.com/verify?email=<email address>
-_Mail verify: https://shopii-spirit.herokuapp.com/verify?email=<email address>&verifycode=<code>
-_Create username and password: https://shopii-spirit.herokuapp.com/register?email=<email>&username=<username>&password=<password>&fullname=<fullname>&dob=<dob>&phone=<phonenb>&sex=<gender>&address=<address>
-_Change password: https://shopii-spirit.herokuapp.com/forgotpassword?email=<email>&password=<newpassword>
+Request (copy from readme.md of backend):
+The server is hosted at https://shopii-spirit.herokuapp.com
+
+## Ready
+/ready
+
+Respond true if the server is ready
+
+## Login
+/login?username={username}&password={password}
+
+/login?email={email address}&password={password}
+
+Respond: a json that contain:
+- registered: true if the user exists
+- password: true if the password is correct
+- sessionId: the ID of this login session
+- data: contain user data if the user exists and the password is correct
+- error: null if there aren't any error
+
+## Verify
+/verify?email={email address}
+
+The server will sent a code to that mail address
+
+/verify?email={email address}&verifycode={code}
+
+Respond: a json that contain:
+- verified: true if the email is verified and ready to be used
+- verifyCodeSent: true if the code is sent
+
+## Register
+/register?email={verified email address}&{user info queries}
+
+Password string must have 8 or more characters
+
+Respond: A json that contains
+- infoReceived: true if the info is received properly
+- registrationCompleted: true if the user info is completed and user is registered
+- error: null if there aren't any error
+
+## Forgot password
+/forgotpassword?email={verified email address}&password={string with length > 8}
+
+Respond: a json that contains:
+- registered: true if the email is linked with an account and can be used to reset password
+- passwordUpdated: true if the the email is verified and the password is updated
+- error: null if there aren't any error
+
+## Edit account info
+/edit?sessionid={session ID}&{user info queries}
+
+Respond: a json that contains:
+- sessionExisted: true if the session ID is correct
+- sessionExpired: true if the session is still active
+- error: null if there aren't any error
+- infoUpdated: true if user info is edited
+
+## Delete account
+/delete?sessionid={session ID}
+
+Respond: a json that contains:
+- sessionExisted: true if the session ID is correct
+- sessionExpired: true if the session is still active
+- error: null if there aren't any error
+- accountDeleted: true if user info and account is deleted
+
+
+## Get product categories
+/category
+Respond: list of categories
+
+## Get product
+/product?pid={product id}
+/product?category={category name}&page={page number}
+/product?searchquery{query string}
+
+Respond: a json that contains:
+- existed: true if there are at least 1 product
+- categoryExisted: true if the category exists
+- error: null if there aren't any error
+- data: product(s) data

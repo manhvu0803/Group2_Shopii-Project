@@ -4,6 +4,7 @@ import {View, Image,
         Text, TextInput,
         TouchableOpacity, Dimensions} from 'react-native';
 import Constants from 'expo-constants';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 //const value prepare:
@@ -25,20 +26,21 @@ export const Colors = {
 };
 
 const {white, main_bg, tertiary, darklight, brand, fb, gg, i_extra} = Colors;
-const height = Dimensions.get('window').height
+export const height = Dimensions.get('window').height;
+export const window_width = Dimensions.get('window').width;
 
-export const StyledContainer = styled.View`
+export const StyledContainer = styled.SafeAreaView`
     flex: 1;
     height: ${height}px;
     background-color: ${white};
-    padding-left: 25px;
-    padding-right: 25px;
 `;
 
 export const Innercontainer = styled.View`
     flex: 1;
     width: 100%;
     align-items: center;
+    padding-left: 25px;
+    padding-right: 25px;
 `;
 
 export const TitlePart = styled.View`
@@ -52,7 +54,7 @@ export const Logo = styled.Image`
 `;
 
 export const Title = styled.Text`
-    font-size: 80px;
+    font-size: 40px;
     text-align: center;
     font-weight: bold;
     color: ${brand};
@@ -61,10 +63,9 @@ export const Title = styled.Text`
 export const SubTitle = styled.Text`
     font-size: 20px;
     margin-top: 15px;
-    margin-bottom: 15px;
     letter-spacing: 1px;
     font-weight: bold;
-    color: ${tertiary};
+    color: ${brand};
 `;
 
 export const StyledFormArea = styled.View`
@@ -83,26 +84,7 @@ export const StyledTextInput = styled.TextInput`
     color: ${tertiary};
 `;
 
-export const StyledTextOutput = styled.Text`
-    background-color: ${main_bg};
-    padding: 15px;
-    padding-left: 55px;
-    padding-right: 5px;
-    font-size: 16px;
-    height: 60px;
-    margin-vertical: 3px;
-    margin-bottom: 10px;
-    color: ${tertiary};
-`;
-
 export const StyledInputLabel = styled.Text`
-    color: ${tertiary};
-    font-size: 15px;
-    text-align: left;
-    font-weight: bold;
-`;
-
-export const StyledOutputLabel = styled.Text`
     color: ${tertiary};
     font-size: 15px;
     text-align: left;
@@ -142,6 +124,16 @@ export const StyledButton =styled.TouchableOpacity`
         background-color: ${fb};
         width: 40%;
         padding: 7px;
+    `};
+    ${(props) => props.save == true && `
+        background-color: ${brand};
+        width: 40%;
+        margin-vertical: 2px;
+    `};
+    ${(props) => props.cancle == true && `
+        background-color: ${darklight};
+        width: 40%;
+        margin-vertical: 2px;
     `};
 `;
 
@@ -218,4 +210,35 @@ export const MyRadioButton = styled.TouchableOpacity`
     align-items: center;
     margin-left: 20px;
     margin-bottom: 10px;
+`;
+
+export const StyledSearchInput = styled.TextInput`
+    background-color: ${white};
+    paddingRight: 55px;
+    paddingLeft: 10px;
+    height: 40px;
+    font-size: 16px;
+    margin-vertical: 3px;
+    margin-bottom: 10px;
+    color: ${tertiary};
+    border-radius: 15px;
+`;
+
+export const StyledTextOutput = styled.Text`
+    background-color: ${main_bg};
+    padding: 15px;
+    padding-left: 55px;
+    padding-right: 5px;
+    font-size: 16px;
+    height: 60px;
+    margin-vertical: 3px;
+    margin-bottom: 10px;
+    color: ${tertiary};
+`;
+
+export const StyledOutputLabel = styled.Text`
+    color: ${tertiary};
+    font-size: 15px;
+    text-align: left;
+    font-weight: bold;
 `;
