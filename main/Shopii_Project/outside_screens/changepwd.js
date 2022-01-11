@@ -41,7 +41,7 @@ const ChangePwd = ({navigation, route}) =>{
     const handleChangePWD = (credentials, setSubmitting) => {
         handleMessage(null);
         const {newpassword} = credentials;
-        const  url = ("https://shopii-spirit.herokuapp.com/"+forgotpassword+"?" 
+        const  url = ("https://shopii-spirit.herokuapp.com/"+"forgotpassword"+"?" 
                     + "email=" + email + "&password=" + newpassword);
         console.log(url);
         /* if (reason === "forgotpassword"){
