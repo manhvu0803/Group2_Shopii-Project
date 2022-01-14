@@ -105,7 +105,7 @@ const ProductScreen = ({navigation, route}) => {
     }
 
     let added = 0;
-    if (preCredentials.data !== undefined){
+    if (preCredentials !== null){
         added = isAdded();
     }
 
