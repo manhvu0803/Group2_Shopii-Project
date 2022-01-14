@@ -13,6 +13,8 @@ const db = firestore.getFirestore();
 
 const users = new Map();
 const emailMap = new Map();
+const products = new Map();
+const categoryMap = new Map();
 //const products = new Map();
 
 const storage = new fireStorage.Storage(app);
@@ -22,6 +24,8 @@ var isReady = false;
 db.collection("users").get().then((res) => {
 	res.forEach((doc) => {
 		let data = doc.data();
+		data.username = doc.id;
+		data.dob = data.dob.toDate().toISOString().split("T")[0];
 		users.set(doc.id, data);
 		if (data.email)
 			emailMap.set(data.email, doc.id);
@@ -30,14 +34,23 @@ db.collection("users").get().then((res) => {
 	console.log(`Loaded ${users.size} users`);
 });
 
-/*
 db.collection("products").get().then((res) => {
-	res.forEach((doc) => {
-		products.set(doc.id, doc.data());
+	res.forEach(async (doc) => {
+		let data = doc.data();
+		data.pid = doc.id;
+		data.imageUrl = [];
+		for (let i = 0; i < 2; i++) {
+			let url = await storage.getProductImageUrl(data.pid, 1);
+			data.imageUrl.push(url);
+		}
+		products.set(doc.id, data);
+
+		let cat = data.category;
+		if (!categoryMap.has(cat))
+			categoryMap.set(cat, []);
+		categoryMap.get(cat).push(data);
 	});
-	console.log(`Loaded ${products.size} products`);
-})
-*/
+});
 
 exports.ready = function()
 {
@@ -86,7 +99,7 @@ exports.registerUser = async function(username, userData)
 	emailMap.set(userData.email, username);
 	let userDoc = db.collection("users").doc(username);
 	await userDoc.set(userData);
-	
+	userData.dob = userData.dob.toDate().toISOString().split("T")[0];
 	console.log("New user written to database successfully");
 }
 
@@ -130,5 +143,35 @@ exports.deleteUser = async function(username)
 
 exports.getProduct = function(pid)
 {
-	return productId.get(pid);
+	return products.get(pid);
 }
+
+// return a map iterator
+exports.getProductCategory = function()
+{
+	return categoryMap.keys();
+}
+
+exports.getProductByCategory = function(category, page)
+{
+	let cnt = 5;
+	let res = [];
+	let pds = categoryMap.get(category);
+	if (!pds)
+		return null;
+	for (let i = 0; i < cnt && (i + cnt * page) < pds.length; i++)
+		res.push(pds[i + cnt * page]);
+	return res;
+}
+
+exports.getProductByQuery = function(query)
+{
+	let cnt = 5, page;
+	let res = [];
+	products.values.forEach(val => {
+		if (val.name.includes(query) || val.description.includes(query))
+			res.push(val);
+	});
+	return res;
+}
+

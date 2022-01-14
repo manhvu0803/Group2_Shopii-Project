@@ -22,7 +22,7 @@ exports.check = function(id)
 {
 	if (!sessions.has(id))
 		return null;
-		let data = sessions.get(id);
+	let data = sessions.get(id);
 	if (data.lastUpdate + duration < Date.now())
 		return false;
 	

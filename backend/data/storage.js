@@ -5,6 +5,7 @@ exports.Storage = class Storage
 	constructor(app)
 	{
 		this.ready = false;
+		this.fileDuration = 1000 * 60 * 60 * 24 * 7;
 		this.bucket = firebaseSt.getStorage(app).bucket();
 		
 		this.bucket.exists().then((res) => {
@@ -17,19 +18,39 @@ exports.Storage = class Storage
 		})
 	}
 
-	async getProfilePicUrl(username)
+	async getFileUrl(path)
 	{
-		let duration = 1000 * 60 * 60 * 24;
-		let file = this.bucket.file(`users/${username}/profilepic.jpg`);
+		let file = this.bucket.file(path);
 		let exists = await file.exists();
 
-		if (!exists[0]) {
-			console.error(`${username}'s profile picture not found`);
+		if (!exists[0])
 			return null;
-		}
-		
-		console.log(`Got ${username} profile picture`);
-		let urls = await file.getSignedUrl({action: "read", expires: Date.now() + duration});
+
+		let urls = await file.getSignedUrl({
+			action: "read", 
+			expires: Date.now() + this.fileDuration
+		});
 		return urls[0];
+	}
+
+	async getProfilePicUrl(username)
+	{
+		let url = await this.getFileUrl(`users/${username}/profilepic.jpg`);
+
+		if (!url)
+			console.error(`${username}'s profile picture not found`);
+		else
+			console.log(`Got ${username} profile picture`);
+
+		return url;
+	}
+	
+	async getProductImageUrl(pid, num = 1)
+	{
+		let url = this.getFileUrl(`products/${pid}/${num}.jpg`);
+		if (!url)
+			console.error(`${pid}'s image no.${num} not found`);
+
+		return url;
 	}
 }
