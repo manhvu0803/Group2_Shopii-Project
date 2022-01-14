@@ -27,6 +27,7 @@ import Scroll_component from '../components/scroll_component';
 import  AsyncStorage  from '@react-native-async-storage/async-storage';
 
 import { CredentialsContext } from './../components/context_component';
+import { render } from 'react-dom';
 
 //Colors:
 const {brand, darklight, white} = Colors;
@@ -129,6 +130,83 @@ const ProductScreen = ({navigation, route}) => {
     const NumtoString = (num) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
+    
+    const renderButton = (added, product) => {
+        if (product.available == 0){
+            return(
+                <StyledButton google={true} style={{
+                        width: '80%', height: 60,
+                        padding: 0,
+                        backgroundColor: darklight,
+                    }}
+                    onPress={() => {
+                        Alert.alert("", "This product is out of stock.", 
+                                    [{text: "continue"}]);
+                    }}
+                >
+                    <ButtonText 
+                        style={{
+                            color: white,
+                            fontSize: 17,   
+                        }}
+                    >
+                        Out of stock
+                    </ButtonText>
+                </StyledButton>
+            )
+        }
+        else if (added == 0){
+            return(
+                <StyledButton google={true} style={{
+                        width: '80%', height: 60,
+                        padding: 0,
+                        backgroundColor: brand,
+                    }}
+                    onPress={() => {
+                        if (storedCredentials !== null){
+                            AddtoShoppingcart(product);
+                            console.log("Added.")
+                        }
+                        else{
+                            navigation.navigate("Login");
+                        }
+                    }}
+                >
+                    <ButtonText 
+                        style={{
+                            color: white,
+                            fontSize: 17,   
+                        }}
+                    >
+                        Add to cart
+                    </ButtonText>
+                </StyledButton>
+            )
+        }
+        else{
+            return(
+                <StyledButton google={true} style={{
+                        width: '80%', height: 60,
+                        padding: 0,
+                        backgroundColor: brand,
+                    }}
+                    onPress={() => {
+                        Alert.alert("", "This product is already added into your cart.", 
+                                    [{text: "continue"}]);
+                    }}
+                >
+                    <ButtonText 
+                        style={{
+                            color: white,
+                            fontSize: 17,   
+                        }}
+                    >
+                        Added
+                    </ButtonText>
+                </StyledButton>
+            )
+        }
+    }
 
     return(
         <KeyboardAvoidingView style={{flex:1}}>
@@ -199,51 +277,7 @@ const ProductScreen = ({navigation, route}) => {
                                                     Available: {product.available}
                                                 </Text>
 
-                                                {added==0 
-                                                ? (<StyledButton google={true} style={{
-                                                            width: '80%', height: 60,
-                                                            padding: 0,
-                                                            backgroundColor: brand,
-                                                        }}
-                                                        onPress={() => {
-                                                            if (storedCredentials !== null){
-                                                                AddtoShoppingcart(product);
-                                                                console.log("Added.")
-                                                            }
-                                                            else{
-                                                                navigation.navigate("Login");
-                                                            }
-                                                        }}
-                                                    >
-                                                        <ButtonText 
-                                                            style={{
-                                                                color: white,
-                                                                fontSize: 17,   
-                                                            }}
-                                                        >
-                                                            Add to cart
-                                                        </ButtonText>
-                                                    </StyledButton>)
-                                                : (<StyledButton google={true} style={{
-                                                            width: '80%', height: 60,
-                                                            padding: 0,
-                                                            backgroundColor: brand,
-                                                        }}
-                                                        onPress={() => {
-                                                            Alert.alert("", "This product is already added into your cart.", 
-                                                                        [{text: "continue"}]);
-                                                        }}
-                                                    >
-                                                        <ButtonText 
-                                                            style={{
-                                                                color: white,
-                                                                fontSize: 17,   
-                                                            }}
-                                                        >
-                                                            Added
-                                                        </ButtonText>
-                                                    </StyledButton>)
-                                                }
+                                                {renderButton(added, product)}
                                             </View>
                                         </View>
 

@@ -247,8 +247,8 @@ const Shoppingcart = ({navigation, route}) => {
                         )}
                     />
                     <View style={{
-                            height: 100,
-                            width:'100%',
+                            borderTopWidth: 0.75,
+                            height: 100, width:'100%',
                             flexDirection: 'row',
                             paddingLeft: 10,
                         }}

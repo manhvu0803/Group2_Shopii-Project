@@ -74,6 +74,7 @@ const Login = ({navigation}) =>{
                 data["sessionId"] = sessionId;
                 data["shopping cart"] = [];
                 data["ordered list"] = [];
+                data["product list"] = [];
                 Persistlognin({data});
             }
             setSubmitting(false);

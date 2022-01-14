@@ -12,6 +12,7 @@ import UserProfile from "../inside_screens/user_profile";
 import UserAccount from "../inside_screens/user_account";
 import Shoppingcart from "../inside_screens/shoppingcart";
 import MyOrder from "../inside_screens/ordered_screen";
+import MyShop from "../inside_screens/myshop";
 
 
 const Stack = createStackNavigator();
@@ -46,6 +47,10 @@ const InsideStack = ({route}) => {
 
             <Stack.Screen
                 name="My Account" component={UserAccount}
+            />
+
+            <Stack.Screen
+                name="My Shop" component={MyShop}
             />
 
             <Stack.Screen
